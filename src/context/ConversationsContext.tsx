@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import type { Message, User } from "../types";
+import { useSelectedUser } from "./SelectedUserContext";
 import {
   loadConversationsFromStorage,
   saveConversationsToStorage,
@@ -9,11 +10,16 @@ import {
 
 type ConversationsContextType = {
   conversations: Record<string, Message[]>;
+  selectedUser: User | null;
+  messages: Message[];
   getMessages: (userId: string) => Message[];
   addMessage: (user: User, message: Message) => void;
   deleteMessage: (userId: string, messageId: string) => void;
   editMessage: (userId: string, messageId: string, newText: string) => void;
   deleteConversation: (userId: string) => void;
+  handleOnSubmit: (text: string) => void;
+  handleDeleteMessage: (messageId: string) => void;
+  handleEditMessage: (messageId: string, newText: string) => void;
 };
 
 const ConversationsContext = createContext<
@@ -28,6 +34,7 @@ export function ConversationsProvider({
   const [conversations, setConversations] = useState<Record<string, Message[]>>(
     loadConversationsFromStorage()
   );
+  const { selectedUser } = useSelectedUser();
 
   useEffect(() => {
     saveConversationsToStorage(conversations);
@@ -82,15 +89,45 @@ export function ConversationsProvider({
     });
   };
 
+  // Get messages for selected user
+  const userKey = selectedUser ? findUserKey(selectedUser.id) : undefined;
+  const messages = userKey ? conversations[userKey] || [] : [];
+
+  // Handle functions for selected user
+  const handleOnSubmit = (text: string) => {
+    if (!selectedUser || text.trim() === "") return;
+    const newMessage: Message = {
+      id: Date.now().toString(),
+      text: text.trim(),
+      timestamp: new Date(),
+    };
+    addMessage(selectedUser, newMessage);
+  };
+
+  const handleDeleteMessage = (messageId: string) => {
+    if (!selectedUser) return;
+    deleteMessage(selectedUser.id, messageId);
+  };
+
+  const handleEditMessage = (messageId: string, newText: string) => {
+    if (!selectedUser) return;
+    editMessage(selectedUser.id, messageId, newText);
+  };
+
   return (
     <ConversationsContext.Provider
       value={{
         conversations,
+        selectedUser,
+        messages,
         getMessages,
         addMessage,
         deleteMessage,
         editMessage,
         deleteConversation,
+        handleOnSubmit,
+        handleDeleteMessage,
+        handleEditMessage,
       }}
     >
       {children}

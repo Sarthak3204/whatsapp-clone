@@ -1,8 +1,8 @@
 import UserMessage from "./UserMessage";
-import { useChatMessages } from "../../hooks/useChatMessages";
+import { useConversations } from "../../context/ConversationsContext";
 
 export default function MessageList() {
-  const { selectedUser, messages } = useChatMessages();
+  const { selectedUser, messages } = useConversations();
 
   if (!selectedUser) return null;
 

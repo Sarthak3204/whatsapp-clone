@@ -1,10 +1,10 @@
 import { useState, useEffect, useRef } from "react";
-import { useChatMessages } from "./useChatMessages";
+import { useConversations } from "../context/ConversationsContext";
 
 export function useMessageInput() {
   const [message, setMessage] = useState("");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const { selectedUser, handleOnSubmit } = useChatMessages();
+  const { selectedUser, handleOnSubmit } = useConversations();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

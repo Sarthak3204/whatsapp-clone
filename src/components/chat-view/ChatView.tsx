@@ -2,10 +2,10 @@ import { useEffect, useRef } from "react";
 import TextComposer from "../message-composer/TextComposer";
 import MessageList from "../chat-message/MessageList";
 import ChatItem from "../chat-list/ChatItem";
-import { useChatMessages } from "../../hooks/useChatMessages";
+import { useConversations } from "../../context/ConversationsContext";
 
 export default function ChatView() {
-  const { selectedUser, messages } = useChatMessages();
+  const { selectedUser, messages } = useConversations();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {

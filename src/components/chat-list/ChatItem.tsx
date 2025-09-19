@@ -2,8 +2,8 @@ import { useState } from "react";
 import type { User } from "../../types";
 import DeleteButton from "../buttons/DeleteButton";
 import DeleteConfirmationModal from "../modals/DeleteConfirmationModal";
-import { useConversations } from "../../context/ConversationsContext";
 import { useViewMode } from "../../context/ViewModeContext";
+import { useConversations } from "../../context/ConversationsContext";
 
 type ChatItemProps = {
   user: User;

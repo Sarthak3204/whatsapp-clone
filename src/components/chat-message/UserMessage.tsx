@@ -1,5 +1,5 @@
 import type { Message } from "../../types";
-import { useChatMessages } from "../../hooks/useChatMessages";
+import { useConversations } from "../../context/ConversationsContext";
 import DeleteButton from "../buttons/DeleteButton";
 import EditButton from "../buttons/EditButton";
 import Timestamp from "../Timestamp";
@@ -12,7 +12,7 @@ export default function UserMessage({ message }: { message: Message }) {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const { selectedUser, handleDeleteMessage, handleEditMessage } =
-    useChatMessages();
+    useConversations();
   const { viewMode } = useViewMode();
 
   if (!selectedUser) return null;
