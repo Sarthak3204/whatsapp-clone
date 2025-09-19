@@ -4,7 +4,8 @@ import { useConversations } from "../context/ConversationsContext";
 
 export function useChatMessages() {
   const { selectedUser } = useSelectedUser();
-  const { getMessages, addMessage, deleteMessage } = useConversations();
+  const { getMessages, addMessage, deleteMessage, editMessage } =
+    useConversations();
 
   if (!selectedUser) {
     return {
@@ -12,6 +13,7 @@ export function useChatMessages() {
       messages: [],
       handleOnSubmit: () => {},
       handleDeleteMessage: () => {},
+      handleEditMessage: () => {},
     };
   }
 
@@ -19,18 +21,20 @@ export function useChatMessages() {
 
   const handleOnSubmit = (text: string) => {
     if (text.trim() === "") return;
-
     const newMessage: Message = {
       id: Date.now().toString(),
       text: text.trim(),
       timestamp: new Date(),
     };
-
-    addMessage(selectedUser.id, newMessage);
+    addMessage(selectedUser, newMessage);
   };
 
   const handleDeleteMessage = (messageId: string) => {
     deleteMessage(selectedUser.id, messageId);
+  };
+
+  const handleEditMessage = (messageId: string, newText: string) => {
+    editMessage(selectedUser.id, messageId, newText);
   };
 
   return {
@@ -38,5 +42,6 @@ export function useChatMessages() {
     messages,
     handleOnSubmit,
     handleDeleteMessage,
+    handleEditMessage,
   };
 }

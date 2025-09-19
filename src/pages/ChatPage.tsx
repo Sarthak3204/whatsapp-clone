@@ -5,37 +5,72 @@ import {
   SelectedUserProvider,
   useSelectedUser,
 } from "../context/SelectedUserContext";
-import { ConversationsProvider } from "../context/ConversationsContext";
+import {
+  ConversationsProvider,
+  useConversations,
+} from "../context/ConversationsContext";
+import { ViewModeProvider } from "../context/ViewModeContext";
 import Header from "../components/Header";
+import { useState } from "react";
+import type { User } from "../types";
+import { loadConnectionsFromStorage } from "../utils";
 
 function ChatPageContent() {
-  const { selectedUser } = useSelectedUser();
+  const [connections, setConnections] = useState<User[]>(
+    loadConnectionsFromStorage()
+  );
+  const { selectedUser, setSelectedUser } = useSelectedUser();
+  const { deleteConversation } = useConversations();
+
+  const handleDeleteConnection = (userId: string) => {
+    setConnections((prev) => prev.filter((user) => user.id !== userId));
+    if (selectedUser?.id === userId) {
+      setSelectedUser(null);
+    }
+    // Remove conversation from conversations record
+    deleteConversation(userId);
+  };
 
   return (
-    <div className="flex h-screen bg-[rgb(22,23,23)]">
-      <div className="grow-0 shrink-0 sm:basis-[45%] lg:basis-[40%] xl:basis-[30%] border-r border-gray-700">
-        <Header />
-        <ChatList />
+    <div className="flex h-screen bg-[rgb(22,23,23)] overflow-x-auto">
+      <div className="flex min-w-full">
+        <div className="grow-0 shrink-0 sm:basis-[45%] lg:basis-[40%] xl:basis-[30%] border-r border-gray-700 flex flex-col min-w-[280px]">
+          <Header setConnections={setConnections} />
+          <div className="flex-1 overflow-hidden">
+            {connections.length !== 0 ? (
+              <ChatList
+                connections={connections}
+                onDeleteConnection={handleDeleteConnection}
+              />
+            ) : (
+              <div className="flex items-center justify-center h-full text-gray-400 text-lg">
+                No conversations yet
+              </div>
+            )}
+          </div>
+        </div>
+        {selectedUser ? (
+          <div className="flex-1 flex flex-col bg-[url(/bg-chat-room.png)] bg-repeat bg-auto bg-center min-w-[320px]">
+            <ChatView />
+          </div>
+        ) : (
+          <div className="flex-1 flex flex-col p-7 justify-between h-full min-w-[320px]">
+            <DefaultChatView />
+          </div>
+        )}
       </div>
-      {selectedUser ? (
-        <div className="flex-1 flex flex-col bg-[url(/bg-chat-room.png)] w-full bg-repeat bg-auto bg-center">
-          <ChatView />
-        </div>
-      ) : (
-        <div className="flex-1 flex flex-col p-7 justify-between h-full">
-          <DefaultChatView />
-        </div>
-      )}
     </div>
   );
 }
 
 export default function ChatPage() {
   return (
-    <SelectedUserProvider>
-      <ConversationsProvider>
-        <ChatPageContent />
-      </ConversationsProvider>
-    </SelectedUserProvider>
+    <ViewModeProvider>
+      <SelectedUserProvider>
+        <ConversationsProvider>
+          <ChatPageContent />
+        </ConversationsProvider>
+      </SelectedUserProvider>
+    </ViewModeProvider>
   );
 }

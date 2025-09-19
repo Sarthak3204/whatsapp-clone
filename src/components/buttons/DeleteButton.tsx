@@ -1,6 +1,10 @@
 import CrossIcon from "../../assets/cross.svg";
 
-export default function DeleteButton({ onClick }: { onClick: () => void }) {
+export default function DeleteButton({
+  onClick,
+}: {
+  onClick: (e: React.MouseEvent) => void;
+}) {
   return (
     <button
       onClick={onClick}

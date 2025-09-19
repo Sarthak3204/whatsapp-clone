@@ -10,7 +10,7 @@ export default function TextComposer() {
 
   return (
     <form onSubmit={handleSubmit}>
-      <div className="flex items-end justify-between mx-3 mb-3 p-1 border-1 border-gray-700 rounded-3xl bg-[rgb(36,38,38)]">
+      <div className="flex items-end justify-between mx-3 mb-3 p-1 border-1 border-gray-700 rounded-3xl bg-[rgb(36,38,38)] min-w-[300px]">
         <AddButton />
         <EmojiButton />
         <MessageInput
