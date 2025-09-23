@@ -40,12 +40,8 @@ export default function ChatView({
       <div ref={scrollContainerRef} className="flex-1 z-10 overflow-y-auto">
         <MessageList
           messages={messages}
-          onDeleteMessage={(messageId) =>
-            selectedUser && onDeleteMessage(selectedUser.id, messageId)
-          }
-          onEditMessage={(messageId, newText) =>
-            selectedUser && onEditMessage(selectedUser.id, messageId, newText)
-          }
+          onDeleteMessage={onDeleteMessage}
+          onEditMessage={onEditMessage}
         />
       </div>
       <div className="z-20">

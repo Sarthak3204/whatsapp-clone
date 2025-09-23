@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, memo } from "react";
 import type { User, Message } from "../../types";
 import DeleteButton from "../buttons/DeleteButton";
 import DeleteConfirmationModal from "../modals/DeleteConfirmationModal";
@@ -10,7 +10,11 @@ type ChatItemProps = {
   onDelete?: (userId: string) => void;
 };
 
-export default function ChatItem({ user, messages, onDelete }: ChatItemProps) {
+const ChatItem = memo(function ChatItem({
+  user,
+  messages,
+  onDelete,
+}: ChatItemProps) {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const { viewMode } = useViewMode();
   const latestMessage = messages[messages.length - 1];
@@ -65,4 +69,6 @@ export default function ChatItem({ user, messages, onDelete }: ChatItemProps) {
       )}
     </>
   );
-}
+});
+
+export default ChatItem;

@@ -1,10 +1,10 @@
 import NewChatIcon from "../assets/new-chat-icon.svg";
 import type { User } from "../types";
-import { useState } from "react";
+import { useState, memo } from "react";
 import NewChatModal from "./modals/NewChatModal";
 import { useViewMode } from "../context/ViewModeContext";
 
-export default function Header({
+const Header = memo(function Header({
   setConnections,
 }: {
   setConnections: (connections: (prev: User[]) => User[]) => void;
@@ -47,4 +47,6 @@ export default function Header({
       />
     </>
   );
-}
+});
+
+export default Header;

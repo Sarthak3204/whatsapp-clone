@@ -1,4 +1,4 @@
-import { useReducer, useEffect } from "react";
+import { useReducer, useEffect, useCallback } from "react";
 import type { Message, User } from "../types";
 import {
   loadConversationsFromStorage,
@@ -27,38 +27,44 @@ export function useConversations() {
   }, [state.conversations]);
 
   // Helper functions
-  const getMessages = (userId: string): Message[] => {
-    const userKey = findUserKey(state.conversations, userId);
-    return userKey ? state.conversations[userKey] || [] : [];
-  };
+  const getMessages = useCallback(
+    (userId: string): Message[] => {
+      const userKey = findUserKey(state.conversations, userId);
+      return userKey ? state.conversations[userKey] || [] : [];
+    },
+    [state.conversations]
+  );
 
-  const addMessage = (user: User, message: Message) => {
+  const addMessage = useCallback((user: User, message: Message) => {
     dispatch({
       type: "ADD_MESSAGE",
       payload: { user, message },
     });
-  };
+  }, []);
 
-  const deleteMessage = (userId: string, messageId: string) => {
+  const deleteMessage = useCallback((userId: string, messageId: string) => {
     dispatch({
       type: "DELETE_MESSAGE",
       payload: { userId, messageId },
     });
-  };
+  }, []);
 
-  const editMessage = (userId: string, messageId: string, newText: string) => {
-    dispatch({
-      type: "EDIT_MESSAGE",
-      payload: { userId, messageId, newText },
-    });
-  };
+  const editMessage = useCallback(
+    (userId: string, messageId: string, newText: string) => {
+      dispatch({
+        type: "EDIT_MESSAGE",
+        payload: { userId, messageId, newText },
+      });
+    },
+    []
+  );
 
-  const deleteConversation = (userId: string) => {
+  const deleteConversation = useCallback((userId: string) => {
     dispatch({
       type: "DELETE_CONVERSATION",
       payload: { userId },
     });
-  };
+  }, []);
 
   return {
     conversations: state.conversations,

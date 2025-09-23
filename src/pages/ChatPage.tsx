@@ -16,7 +16,7 @@ function ChatPageContent() {
   const [connections, setConnections] = useState<User[]>(
     loadConnectionsFromStorage()
   );
-  const { selectedUser, setSelectedUser } = useSelectedUser();
+  const { selectedUser } = useSelectedUser();
   const {
     getMessages,
     addMessage,
@@ -24,14 +24,6 @@ function ChatPageContent() {
     editMessage,
     deleteConversation,
   } = useConversations();
-
-  const handleDeleteConnection = (userId: string) => {
-    setConnections((prev) => prev.filter((user) => user.id !== userId));
-    if (selectedUser?.id === userId) {
-      setSelectedUser(null);
-    }
-    deleteConversation(userId);
-  };
 
   return (
     <div className="flex h-screen bg-[rgb(22,23,23)] overflow-x-auto">
@@ -42,7 +34,8 @@ function ChatPageContent() {
             {connections.length !== 0 ? (
               <ChatList
                 connections={connections}
-                onDeleteConnection={handleDeleteConnection}
+                setConnections={setConnections}
+                deleteConversation={deleteConversation}
                 getMessages={getMessages}
               />
             ) : (

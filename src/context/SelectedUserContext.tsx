@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useMemo, useState } from "react";
 import type { SelectedUser } from "../types";
 
 type SelectedUserContextType = {
@@ -17,8 +17,13 @@ export function SelectedUserProvider({
 }) {
   const [selectedUser, setSelectedUser] = useState<SelectedUser>(null);
 
+  const contextValue = useMemo(
+    () => ({ selectedUser, setSelectedUser }),
+    [selectedUser]
+  );
+
   return (
-    <SelectedUserContext.Provider value={{ selectedUser, setSelectedUser }}>
+    <SelectedUserContext.Provider value={contextValue}>
       {children}
     </SelectedUserContext.Provider>
   );

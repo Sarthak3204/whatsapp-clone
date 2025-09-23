@@ -4,16 +4,17 @@ import EditButton from "../buttons/EditButton";
 import Timestamp from "../Timestamp";
 import DeleteConfirmationModal from "../modals/DeleteConfirmationModal";
 import EditMessageModal from "../modals/EditMessageModal";
-import { useState } from "react";
+import { useState, memo } from "react";
 import { useViewMode } from "../../context/ViewModeContext";
+import { useSelectedUser } from "../../context/SelectedUserContext";
 
 type UserMessageProps = {
   message: Message;
-  onDeleteMessage: () => void;
-  onEditMessage: (newText: string) => void;
+  onDeleteMessage: (userId: string, messageId: string) => void;
+  onEditMessage: (userId: string, messageId: string, newText: string) => void;
 };
 
-export default function UserMessage({
+const UserMessage = memo(function UserMessage({
   message,
   onDeleteMessage,
   onEditMessage,
@@ -21,6 +22,7 @@ export default function UserMessage({
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const { viewMode } = useViewMode();
+  const { selectedUser } = useSelectedUser();
 
   const handleDeleteClick = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -60,7 +62,7 @@ export default function UserMessage({
       <DeleteConfirmationModal
         isOpen={showDeleteModal}
         onClose={() => setShowDeleteModal(false)}
-        onConfirm={onDeleteMessage}
+        onConfirm={() => onDeleteMessage(selectedUser!.id, message.id)}
         title="Delete Message"
         message="Are you sure you want to delete this message?"
         confirmText="Yes"
@@ -69,9 +71,13 @@ export default function UserMessage({
       <EditMessageModal
         isOpen={showEditModal}
         onClose={() => setShowEditModal(false)}
-        onSave={onEditMessage}
+        onSave={(newText) =>
+          onEditMessage(selectedUser!.id, message.id, newText)
+        }
         currentText={message.text}
       />
     </>
   );
-}
+});
+
+export default UserMessage;

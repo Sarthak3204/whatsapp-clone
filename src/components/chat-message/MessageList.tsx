@@ -3,8 +3,8 @@ import type { Message } from "../../types";
 
 type MessageListProps = {
   messages: Message[];
-  onDeleteMessage: (messageId: string) => void;
-  onEditMessage: (messageId: string, newText: string) => void;
+  onDeleteMessage: (userId: string, messageId: string) => void;
+  onEditMessage: (userId: string, messageId: string, newText: string) => void;
 };
 
 export default function MessageList({
@@ -16,8 +16,8 @@ export default function MessageList({
     <UserMessage
       key={message.id}
       message={message}
-      onDeleteMessage={() => onDeleteMessage(message.id)}
-      onEditMessage={(newText) => onEditMessage(message.id, newText)}
+      onDeleteMessage={onDeleteMessage}
+      onEditMessage={onEditMessage}
     />
   ));
 

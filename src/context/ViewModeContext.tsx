@@ -1,10 +1,16 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useMemo,
+  useCallback,
+} from "react";
 
 type ViewMode = "compact" | "spacious";
 
 type ViewModeContextType = {
   viewMode: ViewMode;
-  setViewMode: (mode: ViewMode) => void;
   toggleViewMode: () => void;
 };
 
@@ -41,18 +47,17 @@ export function ViewModeProvider({ children }: { children: React.ReactNode }) {
     saveViewModeToStorage(viewMode);
   }, [viewMode]);
 
-  const toggleViewMode = () => {
+  const toggleViewMode = useCallback(() => {
     setViewMode((prev) => (prev === "compact" ? "spacious" : "compact"));
-  };
+  }, []);
+
+  const contextValue = useMemo(
+    () => ({ viewMode, toggleViewMode }),
+    [viewMode, toggleViewMode]
+  );
 
   return (
-    <ViewModeContext.Provider
-      value={{
-        viewMode,
-        setViewMode,
-        toggleViewMode,
-      }}
-    >
+    <ViewModeContext.Provider value={contextValue}>
       {children}
     </ViewModeContext.Provider>
   );
