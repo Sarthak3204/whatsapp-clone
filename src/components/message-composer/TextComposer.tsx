@@ -1,12 +1,42 @@
 import SendButton from "../buttons/SendButton";
 import MessageInput from "./MessageInput";
-import { useMessageInput } from "../../hooks/useMessageInput";
 import AddButton from "../buttons/AddButton";
 import EmojiButton from "../buttons/EmojiButton";
+import { useState, useEffect, useRef } from "react";
+import { useSelectedUser } from "../../context/SelectedUserContext";
 
-export default function TextComposer() {
-  const { message, setMessage, textareaRef, handleSubmit, handleKeyDown } =
-    useMessageInput();
+type TextComposerProps = {
+  onSubmit: (text: string) => void;
+};
+
+export default function TextComposer({ onSubmit }: TextComposerProps) {
+  const [message, setMessage] = useState("");
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const { selectedUser } = useSelectedUser();
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSubmit(message);
+    setMessage("");
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (!e.shiftKey && e.key === "Enter") {
+      e.preventDefault();
+      onSubmit(message);
+      setMessage("");
+    }
+  };
+
+  useEffect(() => {
+    if (message === "" && textareaRef.current) {
+      textareaRef.current.style.height = "2.5rem";
+    }
+  }, [message]);
+
+  useEffect(() => {
+    setMessage("");
+  }, [selectedUser]);
 
   return (
     <form onSubmit={handleSubmit}>

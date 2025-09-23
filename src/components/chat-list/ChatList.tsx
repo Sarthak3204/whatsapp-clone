@@ -1,15 +1,17 @@
 import ChatItem from "./ChatItem";
 import { useSelectedUser } from "../../context/SelectedUserContext";
-import type { User } from "../../types";
+import type { User, Message } from "../../types";
 
 type ChatListProps = {
   connections: User[];
   onDeleteConnection: (userId: string) => void;
+  getMessages: (userId: string) => Message[];
 };
 
 export default function ChatList({
   connections,
   onDeleteConnection,
+  getMessages,
 }: ChatListProps) {
   const { selectedUser, setSelectedUser } = useSelectedUser();
 
@@ -23,7 +25,11 @@ export default function ChatList({
       } rounded-xl`}
       onClick={() => setSelectedUser(user)}
     >
-      <ChatItem user={user} onDelete={onDeleteConnection} />
+      <ChatItem
+        user={user}
+        onDelete={onDeleteConnection}
+        messages={getMessages(user.id)}
+      />
     </li>
   ));
   return <ul className="p-2 space-y-1 overflow-y-auto h-full">{chatList}</ul>;

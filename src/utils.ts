@@ -5,8 +5,10 @@ const STORAGE_KEY = "whatsapp-conversations";
 export function loadConversationsFromStorage(): Record<string, Message[]> {
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
+    console.log("Raw stored data:", stored);
     if (stored) {
       const parsed = JSON.parse(stored);
+      console.log("Parsed data:", parsed);
       const converted: Record<string, Message[]> = {};
       for (const [userId, messages] of Object.entries(parsed)) {
         converted[userId] = (messages as any[]).map((msg) => ({
@@ -14,11 +16,13 @@ export function loadConversationsFromStorage(): Record<string, Message[]> {
           timestamp: new Date(msg.timestamp),
         }));
       }
+      console.log("Converted data:", converted);
       return converted;
     }
   } catch (error) {
     console.error("Failed to load conversations:", error);
   }
+  console.log("Returning empty conversations");
   return {};
 }
 
@@ -26,6 +30,7 @@ export function saveConversationsToStorage(
   conversations: Record<string, Message[]>
 ): void {
   try {
+    console.log("saveConversationsToStorage called with:", conversations);
     const serializable: Record<
       string,
       (Omit<Message, "timestamp"> & { timestamp: string })[]
@@ -36,7 +41,9 @@ export function saveConversationsToStorage(
         timestamp: msg.timestamp.toISOString(),
       }));
     }
+    console.log("Serializable data:", serializable);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(serializable));
+    console.log("Successfully saved to localStorage");
   } catch (error) {
     console.error("Failed to save conversations:", error);
   }

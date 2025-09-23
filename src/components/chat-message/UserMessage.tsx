@@ -1,5 +1,4 @@
 import type { Message } from "../../types";
-import { useConversations } from "../../context/ConversationsContext";
 import DeleteButton from "../buttons/DeleteButton";
 import EditButton from "../buttons/EditButton";
 import Timestamp from "../Timestamp";
@@ -8,14 +7,20 @@ import EditMessageModal from "../modals/EditMessageModal";
 import { useState } from "react";
 import { useViewMode } from "../../context/ViewModeContext";
 
-export default function UserMessage({ message }: { message: Message }) {
+type UserMessageProps = {
+  message: Message;
+  onDeleteMessage: () => void;
+  onEditMessage: (newText: string) => void;
+};
+
+export default function UserMessage({
+  message,
+  onDeleteMessage,
+  onEditMessage,
+}: UserMessageProps) {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
-  const { selectedUser, handleDeleteMessage, handleEditMessage } =
-    useConversations();
   const { viewMode } = useViewMode();
-
-  if (!selectedUser) return null;
 
   const handleDeleteClick = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -55,7 +60,7 @@ export default function UserMessage({ message }: { message: Message }) {
       <DeleteConfirmationModal
         isOpen={showDeleteModal}
         onClose={() => setShowDeleteModal(false)}
-        onConfirm={() => handleDeleteMessage(message.id)}
+        onConfirm={onDeleteMessage}
         title="Delete Message"
         message="Are you sure you want to delete this message?"
         confirmText="Yes"
@@ -64,7 +69,7 @@ export default function UserMessage({ message }: { message: Message }) {
       <EditMessageModal
         isOpen={showEditModal}
         onClose={() => setShowEditModal(false)}
-        onSave={(newText: string) => handleEditMessage(message.id, newText)}
+        onSave={onEditMessage}
         currentText={message.text}
       />
     </>

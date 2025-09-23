@@ -2,10 +2,23 @@ import { useEffect, useRef } from "react";
 import TextComposer from "../message-composer/TextComposer";
 import MessageList from "../chat-message/MessageList";
 import ChatItem from "../chat-list/ChatItem";
-import { useConversations } from "../../context/ConversationsContext";
+import { useSelectedUser } from "../../context/SelectedUserContext";
+import type { Message, User } from "../../types";
 
-export default function ChatView() {
-  const { selectedUser, messages } = useConversations();
+type ChatViewProps = {
+  messages: Message[];
+  onAddMessage: (user: User, message: Message) => void;
+  onDeleteMessage: (userId: string, messageId: string) => void;
+  onEditMessage: (userId: string, messageId: string, newText: string) => void;
+};
+
+export default function ChatView({
+  messages,
+  onAddMessage,
+  onDeleteMessage,
+  onEditMessage,
+}: ChatViewProps) {
+  const { selectedUser } = useSelectedUser();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -22,13 +35,31 @@ export default function ChatView() {
   return (
     <>
       <div className="bg-black border-b z-20">
-        <ChatItem user={selectedUser} />
+        <ChatItem user={selectedUser} messages={messages} />
       </div>
       <div ref={scrollContainerRef} className="flex-1 z-10 overflow-y-auto">
-        <MessageList />
+        <MessageList
+          messages={messages}
+          onDeleteMessage={(messageId) =>
+            selectedUser && onDeleteMessage(selectedUser.id, messageId)
+          }
+          onEditMessage={(messageId, newText) =>
+            selectedUser && onEditMessage(selectedUser.id, messageId, newText)
+          }
+        />
       </div>
       <div className="z-20">
-        <TextComposer />
+        <TextComposer
+          onSubmit={(text) => {
+            if (!selectedUser || text.trim() === "") return;
+            const newMessage: Message = {
+              id: Date.now().toString(),
+              text: text.trim(),
+              timestamp: new Date(),
+            };
+            onAddMessage(selectedUser, newMessage);
+          }}
+        />
       </div>
     </>
   );

@@ -1,20 +1,18 @@
 import { useState } from "react";
-import type { User } from "../../types";
+import type { User, Message } from "../../types";
 import DeleteButton from "../buttons/DeleteButton";
 import DeleteConfirmationModal from "../modals/DeleteConfirmationModal";
 import { useViewMode } from "../../context/ViewModeContext";
-import { useConversations } from "../../context/ConversationsContext";
 
 type ChatItemProps = {
   user: User;
+  messages: Message[];
   onDelete?: (userId: string) => void;
 };
 
-export default function ChatItem({ user, onDelete }: ChatItemProps) {
+export default function ChatItem({ user, messages, onDelete }: ChatItemProps) {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const { getMessages } = useConversations();
   const { viewMode } = useViewMode();
-  const messages = getMessages(user.id);
   const latestMessage = messages[messages.length - 1];
 
   return (

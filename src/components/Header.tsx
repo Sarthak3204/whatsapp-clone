@@ -33,7 +33,7 @@ export default function Header({
               viewMode === "compact" ? "spacious" : "compact"
             } mode`}
           >
-            {viewMode === "compact" ? "Spacious" : "Compact"}
+            {viewMode === "compact" ? "Compact" : "Spacious"}
           </button>
         </div>
       </div>

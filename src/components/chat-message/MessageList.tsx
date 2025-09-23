@@ -1,13 +1,24 @@
 import UserMessage from "./UserMessage";
-import { useConversations } from "../../context/ConversationsContext";
+import type { Message } from "../../types";
 
-export default function MessageList() {
-  const { selectedUser, messages } = useConversations();
+type MessageListProps = {
+  messages: Message[];
+  onDeleteMessage: (messageId: string) => void;
+  onEditMessage: (messageId: string, newText: string) => void;
+};
 
-  if (!selectedUser) return null;
-
+export default function MessageList({
+  messages,
+  onDeleteMessage,
+  onEditMessage,
+}: MessageListProps) {
   const userMessages = messages.map((message) => (
-    <UserMessage key={message.id} message={message} />
+    <UserMessage
+      key={message.id}
+      message={message}
+      onDeleteMessage={() => onDeleteMessage(message.id)}
+      onEditMessage={(newText) => onEditMessage(message.id, newText)}
+    />
   ));
 
   return (
