@@ -1,4 +1,5 @@
 import ChatItem from "./ChatItem";
+import ItemList from "../common/ItemList";
 import type { User, Message } from "../../types";
 import { memo, useCallback } from "react";
 
@@ -25,25 +26,30 @@ const ChatList = memo(function ChatList({
     deleteConversation(userId);
   }, []);
 
-  const chatList = connections.map((user) => (
-    <li
-      key={user.id}
-      className={`${
-        selectedUser?.id === user.id
-          ? "bg-[rgb(60,61,61)]"
-          : "hover:bg-[rgb(36,38,38)]"
-      } rounded-xl`}
-      onClick={() => setSelectedUser(user)}
-    >
-      <ChatItem
-        user={user}
-        onDelete={handleDeleteConnection}
-        messages={getMessages(user.id)}
-      />
-    </li>
-  ));
-
-  return <ul className="p-2 space-y-1 overflow-y-auto h-full">{chatList}</ul>;
+  return (
+    <ItemList
+      items={connections}
+      className="p-2 space-y-1 overflow-y-auto h-full"
+      emptyMessage="No conversations yet"
+      emptyClassName="flex items-center justify-center h-full text-gray-400 text-lg"
+      renderItem={(user) => (
+        <div
+          className={`${
+            selectedUser?.id === user.id
+              ? "bg-[rgb(60,61,61)]"
+              : "hover:bg-[rgb(36,38,38)]"
+          } rounded-xl`}
+          onClick={() => setSelectedUser(user)}
+        >
+          <ChatItem
+            user={user}
+            onDelete={handleDeleteConnection}
+            messages={getMessages(user.id)}
+          />
+        </div>
+      )}
+    />
+  );
 });
 
 export default ChatList;

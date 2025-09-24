@@ -27,20 +27,14 @@ function ChatPageContent() {
         <div className="grow-0 shrink-0 sm:basis-[45%] lg:basis-[40%] xl:basis-[30%] border-r border-gray-700 flex flex-col min-w-[280px]">
           <Header setConnections={setConnections} />
           <div className="flex-1 overflow-hidden">
-            {connections.length !== 0 ? (
-              <ChatList
-                connections={connections}
-                setConnections={setConnections}
-                deleteConversation={deleteConversation}
-                getMessages={getMessages}
-                selectedUser={selectedUser}
-                setSelectedUser={setSelectedUser}
-              />
-            ) : (
-              <div className="flex items-center justify-center h-full text-gray-400 text-lg">
-                No conversations yet
-              </div>
-            )}
+            <ChatList
+              connections={connections}
+              setConnections={setConnections}
+              deleteConversation={deleteConversation}
+              getMessages={getMessages}
+              selectedUser={selectedUser}
+              setSelectedUser={setSelectedUser}
+            />
           </div>
         </div>
         {selectedUser ? (

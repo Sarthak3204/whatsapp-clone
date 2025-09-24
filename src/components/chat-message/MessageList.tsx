@@ -1,4 +1,5 @@
 import UserMessage from "./UserMessage";
+import ItemList from "../common/ItemList";
 import type { Message, User } from "../../types";
 
 type MessageListProps = {
@@ -14,23 +15,19 @@ export default function MessageList({
   onDeleteMessage,
   onEditMessage,
 }: MessageListProps) {
-  const userMessages = messages.map((message) => (
-    <UserMessage
-      key={message.id}
-      selectedUser={selectedUser}
-      message={message}
-      onDeleteMessage={onDeleteMessage}
-      onEditMessage={onEditMessage}
-    />
-  ));
-
   return (
-    <>
-      {messages.length !== 0 ? (
-        <ul className="p-4">{userMessages}</ul>
-      ) : (
-        <div className="text-center text-gray-400 mt-20">No messages yet</div>
+    <ItemList
+      items={messages}
+      className="p-4"
+      emptyMessage="No messages yet"
+      renderItem={(message) => (
+        <UserMessage
+          selectedUser={selectedUser}
+          message={message}
+          onDeleteMessage={onDeleteMessage}
+          onEditMessage={onEditMessage}
+        />
       )}
-    </>
+    />
   );
 }
