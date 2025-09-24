@@ -45,7 +45,7 @@ export default function ChatView({
       </div>
       <div className="z-20">
         <TextComposer
-          selectedUser={selectedUser}
+          key={selectedUser.id}
           onSubmit={(text) => {
             if (!selectedUser || text.trim() === "") return;
             const newMessage: Message = {

@@ -27,16 +27,19 @@ export const conversationsReducer = (
   state: ConversationsState,
   action: ConversationsAction
 ): ConversationsState => {
+  let newState: ConversationsState;
+
   switch (action.type) {
     case "ADD_MESSAGE": {
       const { user, message } = action.payload;
       const userKey = createUserKey(user);
-      return {
+      newState = {
         conversations: {
           ...state.conversations,
           [userKey]: [...(state.conversations[userKey] || []), message],
         },
       };
+      break;
     }
 
     case "DELETE_MESSAGE": {
@@ -44,7 +47,7 @@ export const conversationsReducer = (
       const userKey = findUserKey(state.conversations, userId);
       if (!userKey) return state;
 
-      return {
+      newState = {
         conversations: {
           ...state.conversations,
           [userKey]: (state.conversations[userKey] || []).filter(
@@ -52,6 +55,7 @@ export const conversationsReducer = (
           ),
         },
       };
+      break;
     }
 
     case "EDIT_MESSAGE": {
@@ -59,7 +63,7 @@ export const conversationsReducer = (
       const userKey = findUserKey(state.conversations, userId);
       if (!userKey) return state;
 
-      return {
+      newState = {
         conversations: {
           ...state.conversations,
           [userKey]: (state.conversations[userKey] || []).map((msg) =>
@@ -67,6 +71,7 @@ export const conversationsReducer = (
           ),
         },
       };
+      break;
     }
 
     case "DELETE_CONVERSATION": {
@@ -74,15 +79,16 @@ export const conversationsReducer = (
       const userKey = findUserKey(state.conversations, userId);
       if (!userKey) return state;
 
-      const newConversations = { ...state.conversations };
-      delete newConversations[userKey];
-
-      return {
-        conversations: newConversations,
+      newState = {
+        conversations: { ...state.conversations },
       };
+      delete newState.conversations[userKey];
+      break;
     }
 
     default:
       return state;
   }
+
+  return newState;
 };

@@ -1,4 +1,4 @@
-import { useReducer, useEffect, useCallback } from "react";
+import { useReducer, useCallback, useEffect } from "react";
 import type { Message, User } from "../types";
 import {
   loadConversationsFromStorage,
@@ -22,8 +22,11 @@ export function useConversations() {
   );
 
   useEffect(() => {
-    console.log("Saving conversations to localStorage:", state.conversations);
-    saveConversationsToStorage(state.conversations);
+    try {
+      saveConversationsToStorage(state.conversations);
+    } catch (error) {
+      console.error("Failed to save conversations:", error);
+    }
   }, [state.conversations]);
 
   // Helper functions

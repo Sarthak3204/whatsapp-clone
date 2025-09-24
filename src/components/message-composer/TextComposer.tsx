@@ -2,18 +2,13 @@ import SendButton from "../buttons/SendButton";
 import MessageInput from "./MessageInput";
 import AddButton from "../buttons/AddButton";
 import EmojiButton from "../buttons/EmojiButton";
-import { useState, useEffect, useRef } from "react";
-import type { User } from "../../types";
+import { useState, useRef } from "react";
 
 type TextComposerProps = {
-  selectedUser: User;
   onSubmit: (text: string) => void;
 };
 
-export default function TextComposer({
-  selectedUser,
-  onSubmit,
-}: TextComposerProps) {
+export default function TextComposer({ onSubmit }: TextComposerProps) {
   const [message, setMessage] = useState("");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -21,6 +16,9 @@ export default function TextComposer({
     e.preventDefault();
     onSubmit(message);
     setMessage("");
+    if (textareaRef.current) {
+      textareaRef.current.style.height = "auto";
+    }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -28,18 +26,11 @@ export default function TextComposer({
       e.preventDefault();
       onSubmit(message);
       setMessage("");
+      if (textareaRef.current) {
+        textareaRef.current.style.height = "auto";
+      }
     }
   };
-
-  useEffect(() => {
-    if (message === "" && textareaRef.current) {
-      textareaRef.current.style.height = "2.5rem";
-    }
-  }, [message]);
-
-  useEffect(() => {
-    setMessage("");
-  }, [selectedUser]);
 
   return (
     <form onSubmit={handleSubmit}>
