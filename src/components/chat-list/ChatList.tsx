@@ -1,6 +1,6 @@
 import ChatItem from "./ChatItem";
 import type { User, Message } from "../../types";
-import { useCallback } from "react";
+import { memo, useCallback } from "react";
 
 type ChatListProps = {
   connections: User[];
@@ -11,7 +11,7 @@ type ChatListProps = {
   setSelectedUser: (user: User | null) => void;
 };
 
-export default function ChatList({
+const ChatList = memo(function ChatList({
   connections,
   setConnections,
   deleteConversation,
@@ -42,5 +42,8 @@ export default function ChatList({
       />
     </li>
   ));
+
   return <ul className="p-2 space-y-1 overflow-y-auto h-full">{chatList}</ul>;
-}
+});
+
+export default ChatList;
