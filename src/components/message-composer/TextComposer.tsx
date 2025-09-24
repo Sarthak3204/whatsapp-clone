@@ -3,16 +3,19 @@ import MessageInput from "./MessageInput";
 import AddButton from "../buttons/AddButton";
 import EmojiButton from "../buttons/EmojiButton";
 import { useState, useEffect, useRef } from "react";
-import { useSelectedUser } from "../../context/SelectedUserContext";
+import type { User } from "../../types";
 
 type TextComposerProps = {
+  selectedUser: User;
   onSubmit: (text: string) => void;
 };
 
-export default function TextComposer({ onSubmit }: TextComposerProps) {
+export default function TextComposer({
+  selectedUser,
+  onSubmit,
+}: TextComposerProps) {
   const [message, setMessage] = useState("");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const { selectedUser } = useSelectedUser();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

@@ -17,7 +17,7 @@ const ChatItem = memo(function ChatItem({
 }: ChatItemProps) {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const { viewMode } = useViewMode();
-  const latestMessage = messages[messages.length - 1];
+  const latestMessage = messages.at(-1);
 
   return (
     <>

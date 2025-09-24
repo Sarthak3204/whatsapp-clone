@@ -1,10 +1,6 @@
 import ChatList from "../components/chat-list/ChatList";
 import DefaultChatView from "../components/chat-view/DefaultChatView";
 import ChatView from "../components/chat-view/ChatView";
-import {
-  SelectedUserProvider,
-  useSelectedUser,
-} from "../context/SelectedUserContext";
 import { ViewModeProvider } from "../context/ViewModeContext";
 import Header from "../components/Header";
 import { useState } from "react";
@@ -16,7 +12,7 @@ function ChatPageContent() {
   const [connections, setConnections] = useState<User[]>(
     loadConnectionsFromStorage()
   );
-  const { selectedUser } = useSelectedUser();
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const {
     getMessages,
     addMessage,
@@ -37,6 +33,8 @@ function ChatPageContent() {
                 setConnections={setConnections}
                 deleteConversation={deleteConversation}
                 getMessages={getMessages}
+                selectedUser={selectedUser}
+                setSelectedUser={setSelectedUser}
               />
             ) : (
               <div className="flex items-center justify-center h-full text-gray-400 text-lg">
@@ -48,6 +46,7 @@ function ChatPageContent() {
         {selectedUser ? (
           <div className="flex-1 flex flex-col bg-[url(/bg-chat-room.png)] bg-repeat bg-auto bg-center min-w-[320px]">
             <ChatView
+              selectedUser={selectedUser}
               messages={getMessages(selectedUser.id)}
               onAddMessage={addMessage}
               onDeleteMessage={deleteMessage}
@@ -67,9 +66,7 @@ function ChatPageContent() {
 export default function ChatPage() {
   return (
     <ViewModeProvider>
-      <SelectedUserProvider>
-        <ChatPageContent />
-      </SelectedUserProvider>
+      <ChatPageContent />
     </ViewModeProvider>
   );
 }

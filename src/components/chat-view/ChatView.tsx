@@ -2,10 +2,10 @@ import { useEffect, useRef } from "react";
 import TextComposer from "../message-composer/TextComposer";
 import MessageList from "../chat-message/MessageList";
 import ChatItem from "../chat-list/ChatItem";
-import { useSelectedUser } from "../../context/SelectedUserContext";
 import type { Message, User } from "../../types";
 
 type ChatViewProps = {
+  selectedUser: User;
   messages: Message[];
   onAddMessage: (user: User, message: Message) => void;
   onDeleteMessage: (userId: string, messageId: string) => void;
@@ -13,12 +13,12 @@ type ChatViewProps = {
 };
 
 export default function ChatView({
+  selectedUser,
   messages,
   onAddMessage,
   onDeleteMessage,
   onEditMessage,
 }: ChatViewProps) {
-  const { selectedUser } = useSelectedUser();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -30,8 +30,6 @@ export default function ChatView({
     }
   }, [messages]);
 
-  if (!selectedUser) return null;
-
   return (
     <>
       <div className="bg-black border-b z-20">
@@ -39,6 +37,7 @@ export default function ChatView({
       </div>
       <div ref={scrollContainerRef} className="flex-1 z-10 overflow-y-auto">
         <MessageList
+          selectedUser={selectedUser}
           messages={messages}
           onDeleteMessage={onDeleteMessage}
           onEditMessage={onEditMessage}
@@ -46,6 +45,7 @@ export default function ChatView({
       </div>
       <div className="z-20">
         <TextComposer
+          selectedUser={selectedUser}
           onSubmit={(text) => {
             if (!selectedUser || text.trim() === "") return;
             const newMessage: Message = {

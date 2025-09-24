@@ -1,5 +1,4 @@
 import ChatItem from "./ChatItem";
-import { useSelectedUser } from "../../context/SelectedUserContext";
 import type { User, Message } from "../../types";
 import { useCallback } from "react";
 
@@ -8,6 +7,8 @@ type ChatListProps = {
   setConnections: (update: (prev: User[]) => User[]) => void;
   deleteConversation: (userId: string) => void;
   getMessages: (userId: string) => Message[];
+  selectedUser: User | null;
+  setSelectedUser: (user: User | null) => void;
 };
 
 export default function ChatList({
@@ -15,19 +16,14 @@ export default function ChatList({
   setConnections,
   deleteConversation,
   getMessages,
+  selectedUser,
+  setSelectedUser,
 }: ChatListProps) {
-  const { selectedUser, setSelectedUser } = useSelectedUser();
-
-  const handleDeleteConnection = useCallback(
-    (userId: string) => {
-      setConnections((prev) => prev.filter((user) => user.id !== userId));
-      if (selectedUser?.id === userId) {
-        setSelectedUser(null);
-      }
-      deleteConversation(userId);
-    },
-    [selectedUser]
-  );
+  const handleDeleteConnection = useCallback((userId: string) => {
+    setConnections((prev) => prev.filter((user) => user.id !== userId));
+    setSelectedUser(null);
+    deleteConversation(userId);
+  }, []);
 
   const chatList = connections.map((user) => (
     <li

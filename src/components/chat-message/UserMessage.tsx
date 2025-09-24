@@ -1,4 +1,4 @@
-import type { Message } from "../../types";
+import type { Message, User } from "../../types";
 import DeleteButton from "../buttons/DeleteButton";
 import EditButton from "../buttons/EditButton";
 import Timestamp from "../Timestamp";
@@ -6,15 +6,16 @@ import DeleteConfirmationModal from "../modals/DeleteConfirmationModal";
 import EditMessageModal from "../modals/EditMessageModal";
 import { useState, memo } from "react";
 import { useViewMode } from "../../context/ViewModeContext";
-import { useSelectedUser } from "../../context/SelectedUserContext";
 
 type UserMessageProps = {
+  selectedUser: User;
   message: Message;
   onDeleteMessage: (userId: string, messageId: string) => void;
   onEditMessage: (userId: string, messageId: string, newText: string) => void;
 };
 
 const UserMessage = memo(function UserMessage({
+  selectedUser,
   message,
   onDeleteMessage,
   onEditMessage,
@@ -22,7 +23,6 @@ const UserMessage = memo(function UserMessage({
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const { viewMode } = useViewMode();
-  const { selectedUser } = useSelectedUser();
 
   const handleDeleteClick = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -62,7 +62,7 @@ const UserMessage = memo(function UserMessage({
       <DeleteConfirmationModal
         isOpen={showDeleteModal}
         onClose={() => setShowDeleteModal(false)}
-        onConfirm={() => onDeleteMessage(selectedUser!.id, message.id)}
+        onConfirm={() => onDeleteMessage(selectedUser.id, message.id)}
         title="Delete Message"
         message="Are you sure you want to delete this message?"
         confirmText="Yes"
@@ -72,7 +72,7 @@ const UserMessage = memo(function UserMessage({
         isOpen={showEditModal}
         onClose={() => setShowEditModal(false)}
         onSave={(newText) =>
-          onEditMessage(selectedUser!.id, message.id, newText)
+          onEditMessage(selectedUser.id, message.id, newText)
         }
         currentText={message.text}
       />

@@ -1,13 +1,15 @@
 import UserMessage from "./UserMessage";
-import type { Message } from "../../types";
+import type { Message, User } from "../../types";
 
 type MessageListProps = {
+  selectedUser: User;
   messages: Message[];
   onDeleteMessage: (userId: string, messageId: string) => void;
   onEditMessage: (userId: string, messageId: string, newText: string) => void;
 };
 
 export default function MessageList({
+  selectedUser,
   messages,
   onDeleteMessage,
   onEditMessage,
@@ -15,6 +17,7 @@ export default function MessageList({
   const userMessages = messages.map((message) => (
     <UserMessage
       key={message.id}
+      selectedUser={selectedUser}
       message={message}
       onDeleteMessage={onDeleteMessage}
       onEditMessage={onEditMessage}
