@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
-import TextComposer from "../message-composer/TextComposer";
-import MessageList from "../chat-message/MessageList";
-import ChatItem from "../chat-list/ChatItem";
+import TextComposer from "../messageComposer/TextComposer";
+import MessageList from "../chatMessage/MessageList";
+import ChatHeader from "./ChatHeader";
 import type { Message, User } from "../../types";
 
 type ChatViewProps = {
@@ -33,7 +33,7 @@ export default function ChatView({
   return (
     <>
       <div className="bg-black border-b z-20">
-        <ChatItem user={selectedUser} messages={messages} />
+        <ChatHeader user={selectedUser} />
       </div>
       <div ref={scrollContainerRef} className="flex-1 z-10 overflow-y-auto">
         <MessageList

@@ -1,5 +1,7 @@
 import ChatItem from "./ChatItem";
 import ItemList from "../common/ItemList";
+import ActionHandler from "../actions/ActionHandler";
+import DeleteConfirmationAction from "../actions/DeleteConfirmationAction";
 import type { User, Message } from "../../types";
 import { memo, useCallback } from "react";
 
@@ -26,6 +28,22 @@ const ChatList = memo(function ChatList({
     deleteConversation(userId);
   }, []);
 
+  const createChatActionComponents = useCallback(
+    (user: User) => [
+      {
+        actionName: `delete-${user.id}`,
+        component: DeleteConfirmationAction,
+        props: {
+          title: "Delete Contact",
+          message: `Are you sure you want to delete ${user.name}?`,
+          confirmText: "Yes",
+          onConfirm: () => handleDeleteConnection(user.id),
+        },
+      },
+    ],
+    []
+  );
+
   return (
     <ItemList
       items={connections}
@@ -33,20 +51,24 @@ const ChatList = memo(function ChatList({
       emptyMessage="No conversations yet"
       emptyClassName="flex items-center justify-center h-full text-gray-400 text-lg"
       renderItem={(user) => (
-        <div
-          className={`${
-            selectedUser?.id === user.id
-              ? "bg-[rgb(60,61,61)]"
-              : "hover:bg-[rgb(36,38,38)]"
-          } rounded-xl`}
-          onClick={() => setSelectedUser(user)}
-        >
-          <ChatItem
-            user={user}
-            onDelete={handleDeleteConnection}
-            messages={getMessages(user.id)}
-          />
-        </div>
+        <ActionHandler actionComponents={createChatActionComponents(user)}>
+          {({ onAction }) => (
+            <div
+              className={`${
+                selectedUser?.id === user.id
+                  ? "bg-[rgb(60,61,61)]"
+                  : "hover:bg-[rgb(36,38,38)]"
+              } rounded-xl`}
+              onClick={() => setSelectedUser(user)}
+            >
+              <ChatItem
+                user={user}
+                onAction={onAction}
+                messages={getMessages(user.id)}
+              />
+            </div>
+          )}
+        </ActionHandler>
       )}
     />
   );

@@ -1,9 +1,11 @@
-import ChatList from "../components/chat-list/ChatList";
-import DefaultChatView from "../components/chat-view/DefaultChatView";
-import ChatView from "../components/chat-view/ChatView";
+import ChatList from "../components/chatList/ChatList";
+import DefaultChatView from "../components/chatView/DefaultChatView";
+import ChatView from "../components/chatView/ChatView";
 import { ViewModeProvider } from "../context/ViewModeContext";
-import Header from "../components/Header";
-import { useState } from "react";
+import ChatListHeader from "../components/chatList/ChatListHeader";
+import ActionHandler from "../components/actions/ActionHandler";
+import NewChatAction from "../components/actions/NewChatAction";
+import { useState, useCallback } from "react";
 import type { User } from "../types";
 import { loadConnectionsFromStorage } from "../utils";
 import { useConversations } from "../hooks/useConversations";
@@ -21,11 +23,27 @@ function ChatPageContent() {
     deleteConversation,
   } = useConversations();
 
+  const headerActionComponents = useCallback(
+    () => [
+      {
+        actionName: "newChat",
+        component: NewChatAction,
+        props: {
+          onNewUser: (newUser: User) =>
+            setConnections((prev) => [...prev, newUser]),
+        },
+      },
+    ],
+    []
+  );
+
   return (
     <div className="flex h-screen bg-[rgb(22,23,23)] overflow-x-auto">
       <div className="flex min-w-full">
         <div className="grow-0 shrink-0 sm:basis-[45%] lg:basis-[40%] xl:basis-[30%] border-r border-gray-700 flex flex-col min-w-[280px]">
-          <Header setConnections={setConnections} />
+          <ActionHandler actionComponents={headerActionComponents()}>
+            {({ onAction }) => <ChatListHeader onAction={onAction} />}
+          </ActionHandler>
           <div className="flex-1 overflow-hidden">
             <ChatList
               connections={connections}
