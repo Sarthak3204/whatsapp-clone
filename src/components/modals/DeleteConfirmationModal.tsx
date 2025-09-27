@@ -19,11 +19,6 @@ export default function DeleteConfirmationModal({
   message,
   confirmText = "Yes",
 }: DeleteConfirmationModalProps) {
-  const handleConfirm = () => {
-    onConfirm();
-    onClose();
-  };
-
   return (
     <BaseModal
       isOpen={isOpen}
@@ -35,7 +30,7 @@ export default function DeleteConfirmationModal({
         <p className="text-gray-300 mb-6">{message}</p>
         <div className="flex justify-end space-x-3">
           <CancelButton onClick={onClose} />
-          <PrimaryButton onClick={handleConfirm} isDestructive={true}>
+          <PrimaryButton onClick={onConfirm} isDestructive={true}>
             {confirmText}
           </PrimaryButton>
         </div>

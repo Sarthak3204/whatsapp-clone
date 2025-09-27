@@ -1,10 +1,12 @@
 import UserMessage from "./UserMessage";
 import ItemList from "../common/ItemList";
-import ActionHandler from "../actions/ActionHandler";
-import DeleteConfirmationAction from "../actions/DeleteConfirmationAction";
-import EditMessageAction from "../actions/EditMessageAction";
+import {
+  ChatMessageActionHandler,
+  CHAT_MESSAGE_ACTION_TYPES,
+} from "./actionHandler";
+import type { ChatMessageActionPayload } from "./actionHandler";
 import type { Message, User } from "../../types";
-import { useCallback } from "react";
+import { useCallback, memo } from "react";
 
 type MessageListProps = {
   selectedUser: User;
@@ -13,35 +15,62 @@ type MessageListProps = {
   onEditMessage: (userId: string, messageId: string, newText: string) => void;
 };
 
-export default function MessageList({
+const MessageList = memo(function MessageList({
   selectedUser,
   messages,
   onDeleteMessage,
   onEditMessage,
 }: MessageListProps) {
-  const createActionComponents = useCallback(
-    (message: Message) => [
+  const handleMessageAction = useCallback(
+    (action: ChatMessageActionPayload) => {
+      switch (action.type) {
+        case CHAT_MESSAGE_ACTION_TYPES.DELETE_MESSAGE_CONFIRMATION:
+          onDeleteMessage(selectedUser.id, action.payload as string);
+          break;
+
+        case CHAT_MESSAGE_ACTION_TYPES.EDIT_MESSAGE_CONFIRMATION:
+          const { messageId, newText } = action.payload as {
+            messageId: string;
+            newText: string;
+          };
+          onEditMessage(selectedUser.id, messageId, newText);
+          break;
+
+        default:
+          console.log("Unknown message action:", action);
+          break;
+      }
+    },
+    [selectedUser.id, onDeleteMessage, onEditMessage]
+  );
+
+  const createMessageActionComponents = useCallback(
+    (
+      message: Message,
+      onAction: (action: ChatMessageActionPayload) => void
+    ) => [
       {
-        actionName: `delete-${message.id}`,
-        component: DeleteConfirmationAction,
-        props: {
-          title: "Delete Message",
-          message: "Are you sure you want to delete this message?",
-          confirmText: "Yes",
-          onConfirm: () => onDeleteMessage(selectedUser.id, message.id),
+        id: `delete-message-${message.id}`,
+        actionName: "Delete Message",
+        onClick: () => {
+          onAction({
+            type: CHAT_MESSAGE_ACTION_TYPES.TOGGLE_DELETE_MESSAGE_MODAL,
+            payload: message.id,
+          });
         },
       },
       {
-        actionName: `edit-${message.id}`,
-        component: EditMessageAction,
-        props: {
-          currentText: message.text,
-          onSave: (newText: string) =>
-            onEditMessage(selectedUser.id, message.id, newText),
+        id: `edit-message-${message.id}`,
+        actionName: "Edit Message",
+        onClick: () => {
+          onAction({
+            type: CHAT_MESSAGE_ACTION_TYPES.TOGGLE_EDIT_MESSAGE_MODAL,
+            payload: message.id,
+          });
         },
       },
     ],
-    [selectedUser.id]
+    []
   );
 
   return (
@@ -50,12 +79,26 @@ export default function MessageList({
       className="p-4"
       emptyMessage="No messages yet"
       renderItem={(message) => (
-        <ActionHandler actionComponents={createActionComponents(message)}>
-          {({ onAction }) => (
-            <UserMessage message={message} onAction={onAction} />
-          )}
-        </ActionHandler>
+        <ChatMessageActionHandler
+          actionComponents={(onAction) =>
+            createMessageActionComponents(message, onAction)
+          }
+          onChange={handleMessageAction}
+          messageToEdit={message}
+        >
+          {({ onOverlayAction, isPopoverOpen }) => {
+            return (
+              <UserMessage
+                message={message}
+                onAction={onOverlayAction}
+                isDropdownOpen={isPopoverOpen}
+              />
+            );
+          }}
+        </ChatMessageActionHandler>
       )}
     />
   );
-}
+});
+
+export default MessageList;
