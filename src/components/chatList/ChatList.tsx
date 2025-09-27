@@ -1,7 +1,8 @@
 import ChatItem from "./ChatItem";
 import ItemList from "../common/ItemList";
-import ActionHandler from "../actions/ActionHandler";
-import DeleteConfirmationAction from "../actions/DeleteConfirmationAction";
+
+import { ChatListActionHandler, CHAT_LIST_ACTIONS } from "./actionHandler";
+import type { ActionPayload } from "./actionHandler/types";
 import type { User, Message } from "../../types";
 import { memo, useCallback } from "react";
 
@@ -22,22 +23,55 @@ const ChatList = memo(function ChatList({
   selectedUser,
   setSelectedUser,
 }: ChatListProps) {
-  const handleDeleteConnection = useCallback((userId: string) => {
-    setConnections((prev) => prev.filter((user) => user.id !== userId));
-    setSelectedUser(null);
-    deleteConversation(userId);
-  }, []);
+  const handleDeleteConnection = useCallback(
+    (userId: string) => {
+      setConnections((prev) => prev.filter((user) => user.id !== userId));
+      setSelectedUser(null);
+      deleteConversation(userId);
+    },
+    [setConnections, setSelectedUser, deleteConversation]
+  );
+
+  const handleChatAction = useCallback(
+    (action: ActionPayload) => {
+      switch (action.type) {
+        case CHAT_LIST_ACTIONS.DELETE_CHAT_CONFIRMATION:
+          handleDeleteConnection(action.payload as string);
+          break;
+
+        case CHAT_LIST_ACTIONS.DELETE_CONVERSATION_CONFIRMATION:
+          setSelectedUser(null);
+          deleteConversation(action.payload as string);
+          break;
+
+        default:
+          console.log("Unknown chat action:", action);
+          break;
+      }
+    },
+    [handleDeleteConnection, setSelectedUser, deleteConversation]
+  );
 
   const createChatActionComponents = useCallback(
-    (user: User) => [
+    (user: User, onChatAction: (action: ActionPayload) => void) => [
       {
-        actionName: `delete-${user.id}`,
-        component: DeleteConfirmationAction,
-        props: {
-          title: "Delete Contact",
-          message: `Are you sure you want to delete ${user.name}?`,
-          confirmText: "Yes",
-          onConfirm: () => handleDeleteConnection(user.id),
+        id: `delete-contact-${user.id}`,
+        actionName: "Delete Contact",
+        onClick: () => {
+          onChatAction({
+            type: CHAT_LIST_ACTIONS.TOGGLE_DELETE_CHAT_MODAL,
+            payload: user.id,
+          });
+        },
+      },
+      {
+        id: `delete-conversation-${user.id}`,
+        actionName: "Delete Conversation",
+        onClick: () => {
+          onChatAction({
+            type: CHAT_LIST_ACTIONS.TOGGLE_DELETE_CONVERSATION_MODAL,
+            payload: user.id,
+          });
         },
       },
     ],
@@ -51,8 +85,14 @@ const ChatList = memo(function ChatList({
       emptyMessage="No conversations yet"
       emptyClassName="flex items-center justify-center h-full text-gray-400 text-lg"
       renderItem={(user) => (
-        <ActionHandler actionComponents={createChatActionComponents(user)}>
-          {({ onAction }) => (
+        <ChatListActionHandler
+          actionComponents={(onAction) =>
+            createChatActionComponents(user, onAction)
+          }
+          onChange={handleChatAction}
+          chatToDelete={user}
+        >
+          {({ onOverlayAction, isPopoverOpen }) => (
             <div
               className={`${
                 selectedUser?.id === user.id
@@ -63,12 +103,13 @@ const ChatList = memo(function ChatList({
             >
               <ChatItem
                 user={user}
-                onAction={onAction}
+                onAction={onOverlayAction}
                 messages={getMessages(user.id)}
+                isDropdownOpen={isPopoverOpen}
               />
             </div>
           )}
-        </ActionHandler>
+        </ChatListActionHandler>
       )}
     />
   );
