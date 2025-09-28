@@ -1,14 +1,14 @@
-export { ActionHandler as ChatListActionHandler } from "./ActionHandler";
-export { useActions as useChatListActions } from "./useActions";
+export { ActionHandler as ChatActionHandler } from "./ActionHandler";
+export { useActions as useChatActions } from "./useActions";
 export {
-  ACTION_TYPES as CHAT_LIST_ACTIONS,
-  ACTIONS as CHAT_LIST_STATES,
+  ACTION_TYPES as CHAT_ACTION_TYPES,
+  ACTIONS as CHAT_ACTIONS,
 } from "./constants";
 export type {
-  ActionPayload,
-  UseChatListActionsReturn,
-  ChatListActionHandlerProps,
-  UseActionsReturnType,
+  ActionPayload as ChatActionPayload,
+  UseChatActionsReturn as ChatUseActionsReturnType,
+  ActionComponent as ChatActionComponent,
+  ChatActionHandlerProps,
 } from "./types";
 
 export { ActionHandler as default } from "./ActionHandler";

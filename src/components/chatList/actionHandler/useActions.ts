@@ -1,15 +1,11 @@
 import { useCallback, useState } from "react";
 import { ACTION_TYPES, ACTIONS } from "./constants";
-import type {
-  ActionPayload,
-  UseChatListActionsReturn,
-  ChatListState,
-} from "./types";
+import type { ActionPayload, UseChatActionsReturn, ChatState } from "./types";
 
 export const useActions = (
   onChange?: (action: ActionPayload) => void
-): UseChatListActionsReturn => {
-  const [state, setState] = useState<ChatListState>(undefined);
+): UseChatActionsReturn => {
+  const [state, setState] = useState<ChatState>(undefined);
 
   const onAction = useCallback(
     (action: ActionPayload) => {
@@ -30,14 +26,22 @@ export const useActions = (
           );
           break;
 
+        case ACTION_TYPES.CLOSE_DELETE_CHAT_MODAL:
+          setState(undefined);
+          break;
+
+        case ACTION_TYPES.CLOSE_DELETE_CONVERSATION_MODAL:
+          setState(undefined);
+          break;
+
         case ACTION_TYPES.DELETE_CHAT_CONFIRMATION:
           onChange?.(action);
-          setState(undefined);
+          setState(undefined); // Close modal after confirmation
           break;
 
         case ACTION_TYPES.DELETE_CONVERSATION_CONFIRMATION:
           onChange?.(action);
-          setState(undefined);
+          setState(undefined); // Close modal after confirmation
           break;
 
         default:
@@ -48,24 +52,5 @@ export const useActions = (
     [onChange]
   );
 
-  const confirmAction = useCallback(
-    (userId: string) => {
-      if (state === ACTIONS.DELETE_CHAT_MODAL) {
-        onChange?.({
-          type: ACTION_TYPES.DELETE_CHAT_CONFIRMATION,
-          payload: userId,
-        });
-        setState(undefined);
-      } else if (state === ACTIONS.DELETE_CONVERSATION_MODAL) {
-        onChange?.({
-          type: ACTION_TYPES.DELETE_CONVERSATION_CONFIRMATION,
-          payload: userId,
-        });
-        setState(undefined);
-      }
-    },
-    [state, onChange]
-  );
-
-  return [state, onAction, confirmAction];
+  return [state, onAction];
 };

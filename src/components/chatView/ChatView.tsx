@@ -1,8 +1,9 @@
 import { useEffect, useRef } from "react";
 import TextComposer from "../messageComposer/TextComposer";
-import MessageList from "../chatMessage/MessageList";
+import MessageList from "../messageList/MessageList";
 import ChatHeader from "./ChatHeader";
 import type { Message, User } from "../../types";
+import type { OverlayActionPayload } from "../overlays/actionHandler";
 
 type ChatViewProps = {
   selectedUser: User;
@@ -10,6 +11,7 @@ type ChatViewProps = {
   onAddMessage: (user: User, message: Message) => void;
   onDeleteMessage: (userId: string, messageId: string) => void;
   onEditMessage: (userId: string, messageId: string, newText: string) => void;
+  onOverlayAction: (action: OverlayActionPayload) => void;
 };
 
 export default function ChatView({
@@ -18,6 +20,7 @@ export default function ChatView({
   onAddMessage,
   onDeleteMessage,
   onEditMessage,
+  onOverlayAction,
 }: ChatViewProps) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
@@ -41,6 +44,7 @@ export default function ChatView({
           messages={messages}
           onDeleteMessage={onDeleteMessage}
           onEditMessage={onEditMessage}
+          onOverlayAction={onOverlayAction}
         />
       </div>
       <div className="z-20">

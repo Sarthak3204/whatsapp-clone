@@ -4,23 +4,26 @@ import useActions from "./useActions";
 import Dropdown from "../dropdown/Dropdown";
 import Drawer from "../drawer/Drawer";
 
-export default function OverlayActionHandler({
-  children,
-  actionComponents = [],
-}: ActionHandlerProps) {
-  const [state, onAction] = useActions();
+export default function OverlayActionHandler({ children }: ActionHandlerProps) {
+  const [overlayState, onAction] = useActions();
 
   return (
     <>
       {children({
         onAction,
-        isPopoverOpen: !!state,
+        overlayState,
       })}
 
-      {state === ACTIONS.DROPDOWN && (
-        <Dropdown actionComponents={actionComponents} />
+      {overlayState.state === ACTIONS.DROPDOWN && (
+        <Dropdown
+          actionComponents={overlayState.payload?.dropdownItems || []}
+          position={overlayState.payload?.position}
+        />
       )}
-      {state === ACTIONS.DRAWER && <Drawer />}
+
+      {overlayState.state === ACTIONS.DRAWER && <Drawer />}
+
+      {overlayState.state === ACTIONS.TOOLTIP && <div>Tooltip placeholder</div>}
     </>
   );
 }

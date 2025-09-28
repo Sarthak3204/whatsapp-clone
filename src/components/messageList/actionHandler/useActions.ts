@@ -2,14 +2,14 @@ import { useCallback, useState } from "react";
 import { ACTION_TYPES, ACTIONS } from "./constants";
 import type {
   ActionPayload,
-  UseChatMessageActionsReturn,
-  ChatMessageState,
+  UseMessageActionsReturn,
+  MessageState,
 } from "./types";
 
 export const useActions = (
   onChange?: (action: ActionPayload) => void
-): UseChatMessageActionsReturn => {
-  const [state, setState] = useState<ChatMessageState>(undefined);
+): UseMessageActionsReturn => {
+  const [state, setState] = useState<MessageState>(undefined);
 
   const onAction = useCallback(
     (action: ActionPayload) => {
@@ -30,14 +30,21 @@ export const useActions = (
           );
           break;
 
+        case ACTION_TYPES.CLOSE_DELETE_MESSAGE_MODAL:
+          setState(undefined);
+          break;
+
+        case ACTION_TYPES.CLOSE_EDIT_MESSAGE_MODAL:
+          setState(undefined);
+          break;
+
         case ACTION_TYPES.DELETE_MESSAGE_CONFIRMATION:
           onChange?.(action);
-          setState(undefined);
+          setState(undefined); // Close modal after confirmation
           break;
 
         case ACTION_TYPES.EDIT_MESSAGE_CONFIRMATION:
           onChange?.(action);
-          setState(undefined);
           break;
 
         default:
@@ -48,26 +55,7 @@ export const useActions = (
     [onChange]
   );
 
-  const confirmAction = useCallback(
-    (messageId: string) => {
-      if (state === ACTIONS.DELETE_MESSAGE_MODAL) {
-        onChange?.({
-          type: ACTION_TYPES.DELETE_MESSAGE_CONFIRMATION,
-          payload: messageId,
-        });
-        setState(undefined);
-      } else if (state === ACTIONS.EDIT_MESSAGE_MODAL) {
-        onChange?.({
-          type: ACTION_TYPES.EDIT_MESSAGE_CONFIRMATION,
-          payload: messageId,
-        });
-        setState(undefined);
-      }
-    },
-    [state, onChange]
-  );
-
-  return [state, onAction, confirmAction];
+  return [state, onAction];
 };
 
 export default useActions;

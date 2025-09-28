@@ -5,17 +5,30 @@ type ValueOf<T> = T[keyof T];
 
 export type ActionPayload = {
   type: ValueOf<typeof ACTION_TYPES>;
-  payload: unknown;
+  payload?: {
+    dropdownItems?: ActionComponent[];
+    position?: { x: number; y: number };
+    data?: Record<string, unknown>;
+  };
+};
+
+export type OverlayState = {
+  state: ValueOf<typeof ACTIONS> | undefined;
+  payload?: {
+    dropdownItems?: ActionComponent[];
+    position?: { x: number; y: number };
+    data?: Record<string, unknown>;
+  };
 };
 
 export type UseActionsReturnType = [
-  ValueOf<typeof ACTIONS> | undefined,
+  OverlayState,
   (action: ActionPayload) => void
 ];
 
 export type ChildrenProps = {
   onAction: (action: ActionPayload) => void;
-  isPopoverOpen: boolean;
+  overlayState: OverlayState;
 };
 
 export type ActionComponent = {
@@ -24,7 +37,19 @@ export type ActionComponent = {
   onClick: () => void;
 };
 
+// Provider function type
+export type OverlayProvider = (
+  data: Record<string, unknown> | undefined,
+  onBusinessAction: (action: any) => void
+) => ActionComponent[];
+
+// Registry of providers
+export type OverlayProviders = {
+  dropdown?: Record<string, OverlayProvider>;
+  drawer?: Record<string, OverlayProvider>;
+  tooltip?: Record<string, OverlayProvider>;
+};
+
 export type ActionHandlerProps = {
-  actionComponents?: ActionComponent[];
   children: (params: ChildrenProps) => React.ReactNode;
 };

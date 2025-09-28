@@ -4,31 +4,42 @@ import { memo } from "react";
 import { useViewMode } from "../../context/ViewModeContext";
 import DropdownButton from "../buttons/DropdownButton";
 import { OVERLAY_ACTION_TYPES } from "../overlays/actionHandler";
-import type { OverlayUseActionsReturnType } from "../overlays/actionHandler";
+import type { OverlayActionPayload } from "../overlays/actionHandler";
+import type { MessageActionComponent } from "./actionHandler";
 
 type UserMessageProps = {
   message: Message;
-  onAction: OverlayUseActionsReturnType[1];
+  onOverlayAction: (action: OverlayActionPayload) => void;
+  dropdownItems: MessageActionComponent[];
   isDropdownOpen?: boolean;
 };
 
 const UserMessage = memo(function UserMessage({
   message,
-  onAction,
+  onOverlayAction,
+  dropdownItems,
   isDropdownOpen = false,
 }: UserMessageProps) {
   const { viewMode } = useViewMode();
 
   return (
-    <li className="group relative flex justify-end mb-2">
+    <div className="group relative flex justify-end mb-2">
       <div className="max-w-xs lg:max-w-md py-2 px-3 rounded-lg bg-[rgb(0,95,78)] text-white">
         <div className="absolute top-1/2 -translate-y-1/2 right-1 opacity-0 group-hover:opacity-100 transition-all duration-200 z-10">
           <DropdownButton
             onClick={(e: React.MouseEvent) => {
               e.stopPropagation();
-              onAction({
+              const rect = e.currentTarget.getBoundingClientRect();
+
+              onOverlayAction({
                 type: OVERLAY_ACTION_TYPES.TOGGLE_DROPDOWN,
-                payload: message.id,
+                payload: {
+                  dropdownItems,
+                  position: {
+                    x: rect.left - 160, // Position to the left of message
+                    y: rect.top,
+                  },
+                },
               });
             }}
             variant="ghost"
@@ -51,7 +62,7 @@ const UserMessage = memo(function UserMessage({
           </div>
         )}
       </div>
-    </li>
+    </div>
   );
 });
 

@@ -2,24 +2,43 @@ import { memo } from "react";
 import type { User, Message } from "../../types";
 import DropdownButton from "../buttons/DropdownButton";
 import { OVERLAY_ACTION_TYPES } from "../overlays/actionHandler";
-import type { OverlayUseActionsReturnType } from "../overlays/actionHandler";
+import type { OverlayActionPayload } from "../overlays/actionHandler";
+import type { ChatActionComponent } from "./actionHandler";
 import { useViewMode } from "../../context/ViewModeContext";
 
 type ChatItemProps = {
   user: User;
   messages: Message[];
-  onAction: OverlayUseActionsReturnType[1];
+  onOverlayAction: (action: OverlayActionPayload) => void;
+  dropdownItems: ChatActionComponent[];
   isDropdownOpen?: boolean;
 };
 
 const ChatItem = memo(function ChatItem({
   user,
   messages,
-  onAction,
+  onOverlayAction,
+  dropdownItems,
   isDropdownOpen = false,
 }: ChatItemProps) {
   const { viewMode } = useViewMode();
   const latestMessage = messages.at(-1);
+
+  const handleDropdownClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const rect = e.currentTarget.getBoundingClientRect();
+
+    onOverlayAction({
+      type: OVERLAY_ACTION_TYPES.TOGGLE_DROPDOWN,
+      payload: {
+        dropdownItems,
+        position: {
+          x: rect.right + 8,
+          y: rect.top,
+        },
+      },
+    });
+  };
 
   return (
     <div className="relative flex p-3 rounded-lg transition-all duration-200 group cursor-pointer hover:bg-[rgb(42,48,55)]">
@@ -46,13 +65,7 @@ const ChatItem = memo(function ChatItem({
 
       <div className="absolute top-1/2 -translate-y-1/2 right-3 opacity-0 group-hover:opacity-100 transition-all duration-200 transform translate-x-2 group-hover:translate-x-0">
         <DropdownButton
-          onClick={(e: React.MouseEvent) => {
-            e.stopPropagation();
-            onAction({
-              type: OVERLAY_ACTION_TYPES.TOGGLE_DROPDOWN,
-              payload: user.id,
-            });
-          }}
+          onClick={handleDropdownClick}
           variant="ghost"
           size="sm"
           isOpen={isDropdownOpen}

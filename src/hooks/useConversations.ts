@@ -29,7 +29,6 @@ export function useConversations() {
     }
   }, [state.conversations]);
 
-  // Helper functions
   const getMessages = useCallback(
     (userId: string): Message[] => {
       const userKey = findUserKey(state.conversations, userId);

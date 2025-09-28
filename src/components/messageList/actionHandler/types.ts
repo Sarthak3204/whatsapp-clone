@@ -1,6 +1,6 @@
 import type { ReactElement } from "react";
 import { ACTION_TYPES, ACTIONS } from "./constants";
-import type { User } from "../../../types";
+import type { Message } from "../../../types";
 import type { OverlayActionPayload } from "../../overlays/actionHandler";
 
 type ValueOf<T> = T[keyof T];
@@ -8,13 +8,17 @@ type ValueOf<T> = T[keyof T];
 export type ActionPayload = {
   type: ValueOf<typeof ACTION_TYPES>;
   payload?: {
-    userId?: string;
+    messageId?: string;
+    newText?: string;
   };
 };
 
-export type ChatState = ValueOf<typeof ACTIONS> | undefined;
+export type MessageState = ValueOf<typeof ACTIONS> | undefined;
 
-export type UseChatActionsReturn = [ChatState, (action: ActionPayload) => void];
+export type UseMessageActionsReturn = [
+  MessageState,
+  (action: ActionPayload) => void
+];
 
 export type ChildrenProps = {
   onAction: (action: ActionPayload) => void;
@@ -28,11 +32,11 @@ export type ActionComponent = {
   onClick: () => void;
 };
 
-export type ChatActionHandlerProps = {
+export type MessageActionHandlerProps = {
   children: (props: ChildrenProps) => ReactElement;
   onChange?: (action: ActionPayload) => void;
   onOverlayAction?: (action: OverlayActionPayload) => void;
-  user?: User;
+  message?: Message;
 };
 
-export type UseActionsReturnType = UseChatActionsReturn;
+export type UseActionsReturnType = UseMessageActionsReturn;
