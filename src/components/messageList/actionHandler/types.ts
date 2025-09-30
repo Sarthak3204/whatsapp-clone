@@ -1,7 +1,6 @@
 import type { ReactElement } from "react";
 import { ACTION_TYPES, ACTIONS } from "./constants";
 import type { Message } from "../../../types";
-import type { OverlayActionPayload } from "../../overlays/actionHandler";
 
 type ValueOf<T> = T[keyof T];
 
@@ -10,6 +9,7 @@ export type ActionPayload = {
   payload?: {
     messageId?: string;
     newText?: string;
+    text?: string;
   };
 };
 
@@ -23,19 +23,18 @@ export type UseMessageActionsReturn = [
 export type ChildrenProps = {
   onAction: (action: ActionPayload) => void;
   dropdownItems: ActionComponent[];
-  isPopoverOpen: boolean;
 };
 
 export type ActionComponent = {
   id: string;
   actionName: string;
   onClick: () => void;
+  icon?: string;
 };
 
 export type MessageActionHandlerProps = {
   children: (props: ChildrenProps) => ReactElement;
   onChange?: (action: ActionPayload) => void;
-  onOverlayAction?: (action: OverlayActionPayload) => void;
   message?: Message;
 };
 

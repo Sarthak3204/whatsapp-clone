@@ -26,22 +26,14 @@ export const useActions = (
           );
           break;
 
-        case ACTION_TYPES.CLOSE_DELETE_CHAT_MODAL:
-          setState(undefined);
-          break;
-
-        case ACTION_TYPES.CLOSE_DELETE_CONVERSATION_MODAL:
-          setState(undefined);
-          break;
-
         case ACTION_TYPES.DELETE_CHAT_CONFIRMATION:
           onChange?.(action);
-          setState(undefined); // Close modal after confirmation
+          setState(undefined);
           break;
 
         case ACTION_TYPES.DELETE_CONVERSATION_CONFIRMATION:
           onChange?.(action);
-          setState(undefined); // Close modal after confirmation
+          setState(undefined);
           break;
 
         default:

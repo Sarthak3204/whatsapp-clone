@@ -2,7 +2,6 @@ import UserMessage from "./UserMessage";
 import ItemList from "../common/ItemList";
 import { MessageActionHandler, MESSAGE_ACTION_TYPES } from "./actionHandler";
 import type { MessageActionPayload } from "./actionHandler";
-import type { OverlayActionPayload } from "../overlays/actionHandler";
 import type { Message, User } from "../../types";
 import { useCallback, memo } from "react";
 
@@ -11,7 +10,6 @@ type MessageListProps = {
   messages: Message[];
   onDeleteMessage: (userId: string, messageId: string) => void;
   onEditMessage: (userId: string, messageId: string, newText: string) => void;
-  onOverlayAction: (action: OverlayActionPayload) => void;
 };
 
 const MessageList = memo(function MessageList({
@@ -19,7 +17,6 @@ const MessageList = memo(function MessageList({
   messages,
   onDeleteMessage,
   onEditMessage,
-  onOverlayAction,
 }: MessageListProps) {
   const handleMessageAction = useCallback(
     (action: MessageActionPayload) => {
@@ -36,6 +33,15 @@ const MessageList = memo(function MessageList({
           onEditMessage(selectedUser.id, messageId, newText);
           break;
 
+        case MESSAGE_ACTION_TYPES.COPY_MESSAGE:
+          const text = action.payload?.text as string;
+          if (text) {
+            navigator.clipboard.writeText(text).catch((err) => {
+              console.error("Failed to copy message:", err);
+            });
+          }
+          break;
+
         default:
           console.log("Unknown message action:", action);
           break;
@@ -50,19 +56,10 @@ const MessageList = memo(function MessageList({
       className="p-4"
       emptyMessage="No messages yet"
       renderItem={(message) => (
-        <MessageActionHandler
-          onChange={handleMessageAction}
-          onOverlayAction={onOverlayAction}
-          message={message}
-        >
-          {({ dropdownItems, isPopoverOpen }) => {
+        <MessageActionHandler onChange={handleMessageAction} message={message}>
+          {({ dropdownItems }) => {
             return (
-              <UserMessage
-                message={message}
-                onOverlayAction={onOverlayAction}
-                dropdownItems={dropdownItems}
-                isDropdownOpen={isPopoverOpen}
-              />
+              <UserMessage message={message} dropdownItems={dropdownItems} />
             );
           }}
         </MessageActionHandler>

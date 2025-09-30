@@ -22,6 +22,7 @@ export default function MessageInput({
       className="px-3 py-2 w-full bg-transparent outline-none text-white placeholder-gray-400 resize-none max-h-32 min-h-[2.5rem]"
       placeholder={placeholder}
       rows={1}
+      autoFocus
       onInput={(e) => {
         const target = e.target as HTMLTextAreaElement;
         target.style.height = "auto";

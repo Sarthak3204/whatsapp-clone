@@ -2,70 +2,51 @@ import { useActions } from "./useActions";
 import { ACTION_TYPES, ACTIONS } from "./constants";
 import DeleteConfirmationModal from "../../modals/DeleteConfirmationModal";
 import type { ChatActionHandlerProps } from "./types";
-import { OVERLAY_ACTION_TYPES } from "../../overlays/actionHandler";
-import { useCallback, useMemo } from "react";
+import { useMemo } from "react";
 
 export const ActionHandler = ({
   children,
   onChange,
-  onOverlayAction,
   user,
 }: ChatActionHandlerProps) => {
   const [state, onAction] = useActions(onChange);
 
-  const closeDropdown = useCallback(() => {
-    onOverlayAction?.({
-      type: OVERLAY_ACTION_TYPES.CLOSE_DROPDOWN,
-      payload: undefined,
-    });
-  }, [onOverlayAction]);
-  const handleDeleteContact = useCallback(() => {
-    closeDropdown();
-    onAction({
-      type: ACTION_TYPES.TOGGLE_DELETE_CHAT_MODAL,
-      payload: { userId: user?.id },
-    });
-  }, [closeDropdown, onAction, user?.id]);
-
-  const handleDeleteConversation = useCallback(() => {
-    closeDropdown();
-    onAction({
-      type: ACTION_TYPES.TOGGLE_DELETE_CONVERSATION_MODAL,
-      payload: { userId: user?.id },
-    });
-  }, [closeDropdown, onAction, user?.id]);
-
   const dropdownItems = useMemo(() => {
-    if (!user) {
-      return [];
-    }
+    if (!user) return [];
     return [
       {
         id: `delete-contact-${user.id}`,
         actionName: "Delete Contact",
-        onClick: handleDeleteContact,
+        onClick: () =>
+          onAction({
+            type: ACTION_TYPES.TOGGLE_DELETE_CHAT_MODAL,
+            payload: { userId: user?.id },
+          }),
       },
       {
         id: `delete-conversation-${user.id}`,
         actionName: "Delete Conversation",
-        onClick: handleDeleteConversation,
+        onClick: () =>
+          onAction({
+            type: ACTION_TYPES.TOGGLE_DELETE_CONVERSATION_MODAL,
+            payload: { userId: user?.id },
+          }),
       },
     ];
-  }, [user, handleDeleteContact, handleDeleteConversation]);
+  }, [user, onAction]);
 
   return (
     <>
       {children({
         onAction,
         dropdownItems,
-        isPopoverOpen: !!state,
       })}
 
       {state === ACTIONS.DELETE_CHAT_MODAL && (
         <DeleteConfirmationModal
           isOpen={true}
           onClose={() =>
-            onAction({ type: ACTION_TYPES.CLOSE_DELETE_CHAT_MODAL })
+            onAction({ type: ACTION_TYPES.TOGGLE_DELETE_CHAT_MODAL })
           }
           onConfirm={() =>
             onAction({
@@ -82,7 +63,7 @@ export const ActionHandler = ({
         <DeleteConfirmationModal
           isOpen={true}
           onClose={() =>
-            onAction({ type: ACTION_TYPES.CLOSE_DELETE_CONVERSATION_MODAL })
+            onAction({ type: ACTION_TYPES.TOGGLE_DELETE_CONVERSATION_MODAL })
           }
           onConfirm={() =>
             onAction({

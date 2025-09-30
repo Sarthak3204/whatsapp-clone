@@ -30,20 +30,17 @@ export const useActions = (
           );
           break;
 
-        case ACTION_TYPES.CLOSE_DELETE_MESSAGE_MODAL:
-          setState(undefined);
-          break;
-
-        case ACTION_TYPES.CLOSE_EDIT_MESSAGE_MODAL:
-          setState(undefined);
-          break;
-
         case ACTION_TYPES.DELETE_MESSAGE_CONFIRMATION:
           onChange?.(action);
-          setState(undefined); // Close modal after confirmation
+          setState(undefined);
           break;
 
         case ACTION_TYPES.EDIT_MESSAGE_CONFIRMATION:
+          onChange?.(action);
+          setState(undefined);
+          break;
+
+        case ACTION_TYPES.COPY_MESSAGE:
           onChange?.(action);
           break;
 

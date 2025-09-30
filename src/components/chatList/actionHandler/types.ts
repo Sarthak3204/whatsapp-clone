@@ -1,7 +1,6 @@
 import type { ReactElement } from "react";
 import { ACTION_TYPES, ACTIONS } from "./constants";
 import type { User } from "../../../types";
-import type { OverlayActionPayload } from "../../overlays/actionHandler";
 
 type ValueOf<T> = T[keyof T];
 
@@ -19,19 +18,18 @@ export type UseChatActionsReturn = [ChatState, (action: ActionPayload) => void];
 export type ChildrenProps = {
   onAction: (action: ActionPayload) => void;
   dropdownItems: ActionComponent[];
-  isPopoverOpen: boolean;
 };
 
 export type ActionComponent = {
   id: string;
   actionName: string;
   onClick: () => void;
+  icon?: string;
 };
 
 export type ChatActionHandlerProps = {
   children: (props: ChildrenProps) => ReactElement;
   onChange?: (action: ActionPayload) => void;
-  onOverlayAction?: (action: OverlayActionPayload) => void;
   user?: User;
 };
 

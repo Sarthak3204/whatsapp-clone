@@ -3,48 +3,36 @@ import ItemList from "../common/ItemList";
 
 import { ChatActionHandler, CHAT_ACTION_TYPES } from "./actionHandler";
 import type { ChatActionPayload } from "./actionHandler";
-import type { OverlayActionPayload } from "../overlays/actionHandler";
 import type { User, Message } from "../../types";
 import { memo, useCallback } from "react";
 
 type ChatListProps = {
   connections: User[];
-  setConnections: (update: (prev: User[]) => User[]) => void;
-  deleteConversation: (userId: string) => void;
   getMessages: (userId: string) => Message[];
   selectedUser: User | null;
   setSelectedUser: (user: User | null) => void;
-  onOverlayAction: (action: OverlayActionPayload) => void;
+  onDeleteConnection: (userId: string) => void;
+  onDeleteConversation: (userId: string) => void;
 };
 
 const ChatList = memo(function ChatList({
   connections,
-  setConnections,
-  deleteConversation,
   getMessages,
   selectedUser,
   setSelectedUser,
-  onOverlayAction,
+  onDeleteConnection,
+  onDeleteConversation,
 }: ChatListProps) {
-  const handleDeleteConnection = useCallback(
-    (userId: string) => {
-      setConnections((prev) => prev.filter((user) => user.id !== userId));
-      setSelectedUser(null);
-      deleteConversation(userId);
-    },
-    [setConnections, setSelectedUser, deleteConversation]
-  );
-
   const handleChatAction = useCallback(
     (action: ChatActionPayload) => {
+      const userId = action.payload?.userId as string;
       switch (action.type) {
         case CHAT_ACTION_TYPES.DELETE_CHAT_CONFIRMATION:
-          handleDeleteConnection(action.payload?.userId as string);
+          onDeleteConnection(userId);
           break;
 
         case CHAT_ACTION_TYPES.DELETE_CONVERSATION_CONFIRMATION:
-          setSelectedUser(null);
-          deleteConversation(action.payload?.userId as string);
+          onDeleteConversation(userId);
           break;
 
         default:
@@ -52,7 +40,7 @@ const ChatList = memo(function ChatList({
           break;
       }
     },
-    [handleDeleteConnection, setSelectedUser, deleteConversation]
+    [onDeleteConnection, onDeleteConversation]
   );
 
   return (
@@ -62,12 +50,8 @@ const ChatList = memo(function ChatList({
       emptyMessage="No conversations yet"
       emptyClassName="flex items-center justify-center h-full text-gray-400 text-lg"
       renderItem={(user) => (
-        <ChatActionHandler
-          onChange={handleChatAction}
-          onOverlayAction={onOverlayAction}
-          user={user}
-        >
-          {({ dropdownItems, isPopoverOpen }) => (
+        <ChatActionHandler onChange={handleChatAction} user={user}>
+          {({ dropdownItems }) => (
             <div
               className={`${
                 selectedUser?.id === user.id
@@ -78,10 +62,8 @@ const ChatList = memo(function ChatList({
             >
               <ChatItem
                 user={user}
-                onOverlayAction={onOverlayAction}
                 dropdownItems={dropdownItems}
                 messages={getMessages(user.id)}
-                isDropdownOpen={isPopoverOpen}
               />
             </div>
           )}

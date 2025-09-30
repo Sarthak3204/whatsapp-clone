@@ -1,4 +1,3 @@
-import BaseModal from "./BaseModal";
 import CancelButton from "../buttons/CancelButton";
 import PrimaryButton from "../buttons/PrimaryButton";
 
@@ -19,13 +18,23 @@ export default function DeleteConfirmationModal({
   message,
   confirmText = "Yes",
 }: DeleteConfirmationModalProps) {
+  if (!isOpen) return null;
+
+  const handleBackdropClick = (e: React.MouseEvent) => {
+    if (e.target === e.currentTarget) {
+      onClose();
+    }
+  };
+
   return (
-    <BaseModal
-      isOpen={isOpen}
-      onClose={onClose}
-      className="bg-[rgb(32,44,51)] rounded-lg p-4 w-96 max-w-md mx-4"
+    <div
+      className="fixed inset-0 flex items-center justify-center z-50"
+      onClick={handleBackdropClick}
     >
-      <div className="text-center">
+      <div
+        className="bg-[rgb(32,44,51)] rounded-lg p-4 w-96 max-w-md mx-4 text-center"
+        onClick={(e) => e.stopPropagation()}
+      >
         <h2 className="text-white text-xl font-medium mb-4">{title}</h2>
         <p className="text-gray-300 mb-6">{message}</p>
         <div className="flex justify-end space-x-3">
@@ -35,6 +44,6 @@ export default function DeleteConfirmationModal({
           </PrimaryButton>
         </div>
       </div>
-    </BaseModal>
+    </div>
   );
 }
