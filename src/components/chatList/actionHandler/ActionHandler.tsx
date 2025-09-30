@@ -8,8 +8,19 @@ export const ActionHandler = ({
   children,
   onChange,
   user,
+  openDropdownUserId,
 }: ChatActionHandlerProps) => {
   const [state, onAction] = useActions(onChange);
+
+  const isDropdownOpen = !!user && openDropdownUserId === user.id;
+
+  const onToggleDropdown = () => {
+    if (!user) return;
+    onAction({
+      type: ACTION_TYPES.TOGGLE_CHAT_DROPDOWN,
+      payload: { userId: user.id },
+    });
+  };
 
   const dropdownItems = useMemo(() => {
     if (!user) return [];
@@ -40,6 +51,8 @@ export const ActionHandler = ({
       {children({
         onAction,
         dropdownItems,
+        isDropdownOpen,
+        onToggleDropdown,
       })}
 
       {state === ACTIONS.DELETE_CHAT_MODAL && (

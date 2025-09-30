@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import ItemList from "../common/ItemList";
 import type { ActionComponent as ChatActionComponent } from "../chatList/actionHandler/types";
 import type { ActionComponent as MessageActionComponent } from "../messageList/actionHandler/types";
@@ -8,6 +8,8 @@ type DropdownMenuProps = {
   variant?: "ghost" | "solid";
   size?: "sm" | "md" | "lg";
   className?: string;
+  isOpen: boolean;
+  onToggle: () => void;
 };
 
 export default function DropdownMenu({
@@ -15,16 +17,12 @@ export default function DropdownMenu({
   variant = "ghost",
   size = "md",
   className = "",
+  isOpen,
+  onToggle,
 }: DropdownMenuProps) {
-  const [open, setOpen] = useState(false);
-
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
-    setOpen(!open);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
+    onToggle();
   };
 
   const baseStyles =
@@ -45,11 +43,11 @@ export default function DropdownMenu({
         onClick={handleClick}
         className={`${baseStyles} ${variantStyles[variant]} ${sizeStyles[size]} ${className}`}
         aria-haspopup="true"
-        aria-expanded={open}
+        aria-expanded={isOpen}
       >
         <svg
           className={`w-4 h-4 transition-transform duration-200 ${
-            open ? "rotate-180" : ""
+            isOpen ? "rotate-180" : ""
           }`}
           fill="currentColor"
           viewBox="0 0 20 20"
@@ -62,9 +60,8 @@ export default function DropdownMenu({
         </svg>
       </button>
 
-      {open && (
+      {isOpen && (
         <>
-          <div className="fixed inset-0 z-40" onClick={handleClose} />
           <div className="absolute top-full right-0 mt-1 w-48 bg-[rgb(32,44,51)] rounded-lg shadow-xl border border-gray-600/50 py-1 z-50">
             <ItemList
               items={dropdownItems}
@@ -72,7 +69,7 @@ export default function DropdownMenu({
                 <button
                   onClick={() => {
                     item.onClick();
-                    handleClose();
+                    onToggle();
                   }}
                   className="w-full text-left px-4 py-2.5 text-sm text-gray-200 hover:bg-gray-600/30 hover:text-white transition-colors duration-150 flex items-center gap-3"
                 >

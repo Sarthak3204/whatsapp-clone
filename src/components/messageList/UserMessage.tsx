@@ -8,11 +8,15 @@ import DropdownMenu from "../overlays/DropdownMenu";
 type UserMessageProps = {
   message: Message;
   dropdownItems: MessageActionComponent[];
+  isDropdownOpen: boolean;
+  onToggleDropdown: () => void;
 };
 
 const UserMessage = memo(function UserMessage({
   message,
   dropdownItems,
+  isDropdownOpen,
+  onToggleDropdown,
 }: UserMessageProps) {
   const { viewMode } = useViewMode();
 
@@ -24,6 +28,8 @@ const UserMessage = memo(function UserMessage({
             dropdownItems={dropdownItems}
             variant="ghost"
             size="sm"
+            isOpen={isDropdownOpen}
+            onToggle={onToggleDropdown}
           />
         </div>
         <p

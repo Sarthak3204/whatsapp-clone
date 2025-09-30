@@ -18,6 +18,8 @@ export type UseChatActionsReturn = [ChatState, (action: ActionPayload) => void];
 export type ChildrenProps = {
   onAction: (action: ActionPayload) => void;
   dropdownItems: ActionComponent[];
+  isDropdownOpen: boolean;
+  onToggleDropdown: () => void;
 };
 
 export type ActionComponent = {
@@ -31,6 +33,7 @@ export type ChatActionHandlerProps = {
   children: (props: ChildrenProps) => ReactElement;
   onChange?: (action: ActionPayload) => void;
   user?: User;
+  openDropdownUserId: string | null;
 };
 
 export type UseActionsReturnType = UseChatActionsReturn;

@@ -23,6 +23,8 @@ export type UseMessageActionsReturn = [
 export type ChildrenProps = {
   onAction: (action: ActionPayload) => void;
   dropdownItems: ActionComponent[];
+  isDropdownOpen: boolean;
+  onToggleDropdown: () => void;
 };
 
 export type ActionComponent = {
@@ -36,6 +38,7 @@ export type MessageActionHandlerProps = {
   children: (props: ChildrenProps) => ReactElement;
   onChange?: (action: ActionPayload) => void;
   message?: Message;
+  openDropdownMessageId: string | null;
 };
 
 export type UseActionsReturnType = UseMessageActionsReturn;

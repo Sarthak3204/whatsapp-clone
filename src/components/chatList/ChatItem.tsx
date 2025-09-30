@@ -8,12 +8,16 @@ type ChatItemProps = {
   user: User;
   messages: Message[];
   dropdownItems: ChatActionComponent[];
+  isDropdownOpen: boolean;
+  onToggleDropdown: () => void;
 };
 
 const ChatItem = memo(function ChatItem({
   user,
   messages,
   dropdownItems,
+  isDropdownOpen,
+  onToggleDropdown,
 }: ChatItemProps) {
   const { viewMode } = useViewMode();
   const latestMessage = messages.at(-1);
@@ -42,7 +46,13 @@ const ChatItem = memo(function ChatItem({
       </div>
 
       <div className="absolute top-1/2 -translate-y-1/2 right-1 opacity-0 group-hover:opacity-100 transition-all duration-200 z-10">
-        <DropdownMenu dropdownItems={dropdownItems} variant="ghost" size="sm" />
+        <DropdownMenu
+          dropdownItems={dropdownItems}
+          variant="ghost"
+          size="sm"
+          isOpen={isDropdownOpen}
+          onToggle={onToggleDropdown}
+        />
       </div>
     </div>
   );

@@ -40,10 +40,6 @@ export const useActions = (
           setState(undefined);
           break;
 
-        case ACTION_TYPES.COPY_MESSAGE:
-          onChange?.(action);
-          break;
-
         default:
           onChange?.(action);
           break;
