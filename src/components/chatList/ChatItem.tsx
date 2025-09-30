@@ -3,6 +3,7 @@ import type { User, Message } from "../../types";
 import type { ChatActionComponent } from "./actionHandler";
 import { useViewMode } from "../../context/ViewModeContext";
 import DropdownMenu from "../overlays/DropdownMenu";
+import Tooltip from "../overlays/Tooltip";
 
 type ChatItemProps = {
   user: User;
@@ -36,16 +37,21 @@ const ChatItem = memo(function ChatItem({
           {user.name}
         </div>
         {viewMode === "compact" && (
-          <div
-            className="text-sm text-gray-400 truncate max-w-[200px] group-hover:text-gray-300 transition-colors duration-200"
-            title={latestMessage ? latestMessage.text : "No messages yet"}
-          >
-            {latestMessage ? latestMessage.text : "No messages yet"}
-          </div>
+          <Tooltip content={latestMessage?.text || "No messages yet"}>
+            <div className="text-sm text-gray-400 truncate max-w-[200px] group-hover:text-gray-300 transition-colors duration-200">
+              {latestMessage ? latestMessage.text : "No messages yet"}
+            </div>
+          </Tooltip>
         )}
       </div>
 
-      <div className="absolute top-1/2 -translate-y-1/2 right-1 opacity-0 group-hover:opacity-100 transition-all duration-200 z-10">
+      <div
+        className={`absolute top-1/2 -translate-y-1/2 right-1 z-10 transition-opacity duration-200 ${
+          isDropdownOpen
+            ? "opacity-100 pointer-events-auto"
+            : "opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto"
+        }`}
+      >
         <DropdownMenu
           dropdownItems={dropdownItems}
           variant="ghost"
