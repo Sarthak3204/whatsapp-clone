@@ -11,19 +11,8 @@ export const ActionHandler = ({
   children,
   onChange,
   message,
-  openDropdownMessageId,
 }: MessageActionHandlerProps) => {
   const [state, onAction] = useActions(onChange);
-
-  const isDropdownOpen = !!message && openDropdownMessageId === message.id;
-
-  const onToggleDropdown = () => {
-    if (!message) return;
-    onAction({
-      type: ACTION_TYPES.TOGGLE_MESSAGE_DROPDOWN,
-      payload: { messageId: message.id },
-    });
-  };
 
   const dropdownItems = useMemo(() => {
     if (!message) return [];
@@ -65,8 +54,6 @@ export const ActionHandler = ({
       {children({
         onAction,
         dropdownItems,
-        isDropdownOpen,
-        onToggleDropdown,
       })}
 
       {state === ACTIONS.EDIT_MESSAGE_MODAL && (

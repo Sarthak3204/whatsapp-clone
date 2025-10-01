@@ -3,7 +3,7 @@ import ItemList from "../common/ItemList";
 import { MessageActionHandler, MESSAGE_ACTION_TYPES } from "./actionHandler";
 import type { MessageActionPayload } from "./actionHandler";
 import type { Message, User } from "../../types";
-import { useCallback, memo, useState } from "react";
+import { useCallback, memo } from "react";
 
 type MessageListProps = {
   selectedUser: User;
@@ -18,10 +18,6 @@ const MessageList = memo(function MessageList({
   onDeleteMessage,
   onEditMessage,
 }: MessageListProps) {
-  const [openDropdownMessageId, setOpenDropdownMessageId] = useState<
-    string | null
-  >(null);
-
   const handleMessageAction = useCallback(
     (action: MessageActionPayload) => {
       switch (action.type) {
@@ -46,12 +42,6 @@ const MessageList = memo(function MessageList({
           }
           break;
 
-        case MESSAGE_ACTION_TYPES.TOGGLE_MESSAGE_DROPDOWN: {
-          const mid = action.payload?.messageId as string;
-          setOpenDropdownMessageId((prev) => (prev === mid ? null : mid));
-          break;
-        }
-
         default:
           console.log("Unknown message action:", action);
           break;
@@ -66,19 +56,10 @@ const MessageList = memo(function MessageList({
       className="p-4"
       emptyMessage="No messages yet"
       renderItem={(message) => (
-        <MessageActionHandler
-          onChange={handleMessageAction}
-          message={message}
-          openDropdownMessageId={openDropdownMessageId}
-        >
-          {({ dropdownItems, isDropdownOpen, onToggleDropdown }) => {
+        <MessageActionHandler onChange={handleMessageAction} message={message}>
+          {({ dropdownItems }) => {
             return (
-              <UserMessage
-                message={message}
-                dropdownItems={dropdownItems}
-                isDropdownOpen={isDropdownOpen}
-                onToggleDropdown={onToggleDropdown}
-              />
+              <UserMessage message={message} dropdownItems={dropdownItems} />
             );
           }}
         </MessageActionHandler>

@@ -2,14 +2,14 @@ import React from "react";
 import ItemList from "../common/ItemList";
 import type { ActionComponent as ChatActionComponent } from "../chatList/actionHandler/types";
 import type { ActionComponent as MessageActionComponent } from "../messageList/actionHandler/types";
+import { useDropdownManager } from "../../hooks/useDropdownManager";
 
 type DropdownMenuProps = {
   dropdownItems: ChatActionComponent[] | MessageActionComponent[];
   variant?: "ghost" | "solid";
   size?: "sm" | "md" | "lg";
   className?: string;
-  isOpen: boolean;
-  onToggle: () => void;
+  dropdownId: string; // Unique ID for this dropdown
 };
 
 export default function DropdownMenu({
@@ -17,12 +17,12 @@ export default function DropdownMenu({
   variant = "ghost",
   size = "md",
   className = "",
-  isOpen,
-  onToggle,
+  dropdownId,
 }: DropdownMenuProps) {
+  const { isOpen, toggle, dropdownRef } = useDropdownManager(dropdownId);
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
-    onToggle();
+    toggle();
   };
 
   const baseStyles =
@@ -38,7 +38,7 @@ export default function DropdownMenu({
   };
 
   return (
-    <div className="relative inline-block">
+    <div ref={dropdownRef} className="relative inline-block">
       <button
         onClick={handleClick}
         className={`${baseStyles} ${variantStyles[variant]} ${sizeStyles[size]} ${className}`}
@@ -61,24 +61,22 @@ export default function DropdownMenu({
       </button>
 
       {isOpen && (
-        <>
-          <div className="absolute top-full right-0 mt-1 w-48 bg-[rgb(32,44,51)] rounded-lg shadow-xl border border-gray-600/50 py-1 z-50">
-            <ItemList
-              items={dropdownItems}
-              renderItem={(item) => (
-                <button
-                  onClick={() => {
-                    item.onClick();
-                    onToggle();
-                  }}
-                  className="w-full text-left px-4 py-2.5 text-sm text-gray-200 hover:bg-gray-600/30 hover:text-white transition-colors duration-150 flex items-center gap-3"
-                >
-                  <span className="font-medium">{item.actionName}</span>
-                </button>
-              )}
-            />
-          </div>
-        </>
+        <div className="absolute top-full right-0 mt-1 w-48 bg-[rgb(32,44,51)] rounded-lg shadow-xl border border-gray-600/50 py-1 z-50">
+          <ItemList
+            items={dropdownItems}
+            renderItem={(item) => (
+              <button
+                onClick={() => {
+                  item.onClick();
+                  toggle();
+                }}
+                className="w-full text-left px-4 py-2.5 text-sm text-gray-200 hover:bg-gray-600/30 hover:text-white transition-colors duration-150 flex items-center gap-3"
+              >
+                <span className="font-medium">{item.actionName}</span>
+              </button>
+            )}
+          />
+        </div>
       )}
     </div>
   );

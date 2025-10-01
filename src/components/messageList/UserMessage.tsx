@@ -8,34 +8,23 @@ import DropdownMenu from "../overlays/DropdownMenu";
 type UserMessageProps = {
   message: Message;
   dropdownItems: MessageActionComponent[];
-  isDropdownOpen: boolean;
-  onToggleDropdown: () => void;
 };
 
 const UserMessage = memo(function UserMessage({
   message,
   dropdownItems,
-  isDropdownOpen,
-  onToggleDropdown,
 }: UserMessageProps) {
   const { viewMode } = useViewMode();
 
   return (
     <div className="group relative flex justify-end mb-2">
       <div className="max-w-xs lg:max-w-md py-2 px-3 rounded-lg bg-[rgb(0,95,78)] text-white">
-        <div
-          className={`absolute top-1/2 -translate-y-1/2 right-1 z-10 transition-opacity duration-200 ${
-            isDropdownOpen
-              ? "opacity-100 pointer-events-auto"
-              : "opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto"
-          }`}
-        >
+        <div className="absolute top-1/2 -translate-y-1/2 right-1 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
           <DropdownMenu
             dropdownItems={dropdownItems}
             variant="ghost"
             size="sm"
-            isOpen={isDropdownOpen}
-            onToggle={onToggleDropdown}
+            dropdownId={`message-${message.id}`}
           />
         </div>
         <p

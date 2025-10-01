@@ -4,7 +4,7 @@ import ItemList from "../common/ItemList";
 import { ChatActionHandler, CHAT_ACTION_TYPES } from "./actionHandler";
 import type { ChatActionPayload } from "./actionHandler";
 import type { User, Message } from "../../types";
-import { memo, useCallback, useState } from "react";
+import { memo, useCallback } from "react";
 
 type ChatListProps = {
   connections: User[];
@@ -23,10 +23,6 @@ const ChatList = memo(function ChatList({
   onDeleteConnection,
   onDeleteConversation,
 }: ChatListProps) {
-  const [openDropdownUserId, setOpenDropdownUserId] = useState<string | null>(
-    null
-  );
-
   const handleChatAction = useCallback(
     (action: ChatActionPayload) => {
       const userId = action.payload?.userId as string;
@@ -38,12 +34,6 @@ const ChatList = memo(function ChatList({
         case CHAT_ACTION_TYPES.DELETE_CONVERSATION_CONFIRMATION:
           onDeleteConversation(userId);
           break;
-
-        case CHAT_ACTION_TYPES.TOGGLE_CHAT_DROPDOWN: {
-          const uid = action.payload?.userId as string;
-          setOpenDropdownUserId((prev) => (prev === uid ? null : uid));
-          break;
-        }
 
         default:
           console.log("Unknown chat action:", action);
@@ -60,12 +50,8 @@ const ChatList = memo(function ChatList({
       emptyMessage="No conversations yet"
       emptyClassName="flex items-center justify-center h-full text-gray-400 text-lg"
       renderItem={(user) => (
-        <ChatActionHandler
-          onChange={handleChatAction}
-          user={user}
-          openDropdownUserId={openDropdownUserId}
-        >
-          {({ dropdownItems, isDropdownOpen, onToggleDropdown }) => (
+        <ChatActionHandler onChange={handleChatAction} user={user}>
+          {({ dropdownItems }) => (
             <div
               className={`${
                 selectedUser?.id === user.id
@@ -78,8 +64,6 @@ const ChatList = memo(function ChatList({
                 user={user}
                 dropdownItems={dropdownItems}
                 messages={getMessages(user.id)}
-                isDropdownOpen={isDropdownOpen}
-                onToggleDropdown={onToggleDropdown}
               />
             </div>
           )}

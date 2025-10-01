@@ -9,16 +9,12 @@ type ChatItemProps = {
   user: User;
   messages: Message[];
   dropdownItems: ChatActionComponent[];
-  isDropdownOpen: boolean;
-  onToggleDropdown: () => void;
 };
 
 const ChatItem = memo(function ChatItem({
   user,
   messages,
   dropdownItems,
-  isDropdownOpen,
-  onToggleDropdown,
 }: ChatItemProps) {
   const { viewMode } = useViewMode();
   const latestMessage = messages.at(-1);
@@ -45,19 +41,12 @@ const ChatItem = memo(function ChatItem({
         )}
       </div>
 
-      <div
-        className={`absolute top-1/2 -translate-y-1/2 right-1 z-10 transition-opacity duration-200 ${
-          isDropdownOpen
-            ? "opacity-100 pointer-events-auto"
-            : "opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto"
-        }`}
-      >
+      <div className="absolute top-1/2 -translate-y-1/2 right-1 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
         <DropdownMenu
           dropdownItems={dropdownItems}
           variant="ghost"
           size="sm"
-          isOpen={isDropdownOpen}
-          onToggle={onToggleDropdown}
+          dropdownId={`chat-${user.id}`}
         />
       </div>
     </div>
