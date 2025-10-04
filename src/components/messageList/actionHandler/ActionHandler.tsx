@@ -1,11 +1,14 @@
 import { useActions } from "./useActions";
 import { ACTION_TYPES, ACTIONS } from "./constants";
-import DeleteConfirmationModal from "../../modals/DeleteConfirmationModal";
-import EditMessageModal from "../../modals/EditMessageModal";
 import type { MessageActionHandlerProps } from "./types";
-import { useMemo } from "react";
+import { lazy, Suspense, useMemo } from "react";
 import editIconUrl from "../../../assets/edit-message.svg";
 import deleteIconUrl from "../../../assets/delete.svg";
+
+const DeleteConfirmationModal = lazy(
+  () => import("../../modals/DeleteConfirmationModal")
+);
+const EditMessageModal = lazy(() => import("../../modals/EditMessageModal"));
 
 export const ActionHandler = ({
   children,
@@ -57,43 +60,47 @@ export const ActionHandler = ({
       })}
 
       {state === ACTIONS.EDIT_MESSAGE_MODAL && (
-        <EditMessageModal
-          isOpen={true}
-          onClose={() =>
-            onAction({
-              type: ACTION_TYPES.TOGGLE_EDIT_MESSAGE_MODAL,
-              payload: undefined,
-            })
-          }
-          onSave={(newText: string) =>
-            onAction({
-              type: ACTION_TYPES.EDIT_MESSAGE_CONFIRMATION,
-              payload: { messageId: message?.id, newText: newText },
-            })
-          }
-          currentText={message?.text || ""}
-        />
+        <Suspense fallback={null}>
+          <EditMessageModal
+            isOpen={true}
+            onClose={() =>
+              onAction({
+                type: ACTION_TYPES.TOGGLE_EDIT_MESSAGE_MODAL,
+                payload: undefined,
+              })
+            }
+            onSave={(newText: string) =>
+              onAction({
+                type: ACTION_TYPES.EDIT_MESSAGE_CONFIRMATION,
+                payload: { messageId: message?.id, newText: newText },
+              })
+            }
+            currentText={message?.text || ""}
+          />
+        </Suspense>
       )}
 
       {state === ACTIONS.DELETE_MESSAGE_MODAL && (
-        <DeleteConfirmationModal
-          isOpen={true}
-          onClose={() =>
-            onAction({
-              type: ACTION_TYPES.TOGGLE_DELETE_MESSAGE_MODAL,
-              payload: undefined,
-            })
-          }
-          onConfirm={() =>
-            onAction({
-              type: ACTION_TYPES.DELETE_MESSAGE_CONFIRMATION,
-              payload: { messageId: message?.id },
-            })
-          }
-          title="Delete Message"
-          message="Are you sure you want to delete the message?"
-          confirmText="Delete"
-        />
+        <Suspense fallback={null}>
+          <DeleteConfirmationModal
+            isOpen={true}
+            onClose={() =>
+              onAction({
+                type: ACTION_TYPES.TOGGLE_DELETE_MESSAGE_MODAL,
+                payload: undefined,
+              })
+            }
+            onConfirm={() =>
+              onAction({
+                type: ACTION_TYPES.DELETE_MESSAGE_CONFIRMATION,
+                payload: { messageId: message?.id },
+              })
+            }
+            title="Delete Message"
+            message="Are you sure you want to delete the message?"
+            confirmText="Delete"
+          />
+        </Suspense>
       )}
     </>
   );

@@ -1,8 +1,9 @@
-import { memo, useState } from "react";
+import { lazy, memo, Suspense, useState } from "react";
 import NewChatButton from "../buttons/NewChatButton";
-import NewChatModal from "../modals/NewChatModal";
 import { useViewMode } from "../../context/ViewModeContext";
 import type { User } from "../../types";
+
+const NewChatModal = lazy(() => import("../modals/NewChatModal"));
 
 type ChatListHeaderProps = {
   onNewUser: (user: User) => void;
@@ -39,11 +40,15 @@ const ChatListHeader = memo(function ChatListHeader({
         </div>
       </div>
 
-      <NewChatModal
-        isOpen={isNewChatModalOpen}
-        onClose={() => setIsNewChatModalOpen(false)}
-        setNewUser={handleNewUser}
-      />
+      {isNewChatModalOpen && (
+        <Suspense fallback={null}>
+          <NewChatModal
+            isOpen={isNewChatModalOpen}
+            onClose={() => setIsNewChatModalOpen(false)}
+            setNewUser={handleNewUser}
+          />
+        </Suspense>
+      )}
     </>
   );
 });
