@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { ChatViewLayout, SLOT_NAMES } from "./layout";
 import TextComposer from "../messageComposer/TextComposer";
 import MessageList from "../messageList/MessageList";
 import ChatHeader from "./ChatHeader";
@@ -19,31 +19,22 @@ export default function ChatView({
   onDeleteMessage,
   onEditMessage,
 }: ChatViewProps) {
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollTo({
-        top: scrollContainerRef.current.scrollHeight,
-        behavior: "smooth",
-      });
-    }
-  }, [messages]);
-
   return (
-    <>
-      <div className="bg-black border-b z-20">
+    <ChatViewLayout autoScroll={true}>
+      <ChatViewLayout.Slot name={SLOT_NAMES.HEADER}>
         <ChatHeader user={selectedUser} />
-      </div>
-      <div ref={scrollContainerRef} className="flex-1 z-10 overflow-y-auto">
+      </ChatViewLayout.Slot>
+
+      <ChatViewLayout.Slot name={SLOT_NAMES.BODY}>
         <MessageList
           selectedUser={selectedUser}
           messages={messages}
           onDeleteMessage={onDeleteMessage}
           onEditMessage={onEditMessage}
         />
-      </div>
-      <div className="z-20">
+      </ChatViewLayout.Slot>
+
+      <ChatViewLayout.Slot name={SLOT_NAMES.FOOTER}>
         <TextComposer
           key={selectedUser.id}
           onSubmit={(text) => {
@@ -56,7 +47,7 @@ export default function ChatView({
             onAddMessage(selectedUser, newMessage);
           }}
         />
-      </div>
-    </>
+      </ChatViewLayout.Slot>
+    </ChatViewLayout>
   );
 }
